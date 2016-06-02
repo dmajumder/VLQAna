@@ -41,7 +41,7 @@ ana = cms.EDFilter("OS2LAna",
         ), 
     GenHSelParams              = genPartParams.clone(), 
     STMin                      = cms.double  (500.),
-    HTMin                      = cms.double (150.),
+    HTMin                      = cms.double (200.),
     lepsfsParams               = defaultWP.clone(
         lepidtype = cms.string("TIGHT"),
         zdecayMode = cms.string("zelel"),
