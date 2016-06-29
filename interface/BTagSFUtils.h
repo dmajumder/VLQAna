@@ -133,25 +133,25 @@ class BTagSFUtils {
 
   }
 
-    void getBTagSFs(
-        std::vector<double>jetcsvs,
-        std::vector<double>jetpts,
-        std::vector<double>jetetas,
-        std::vector<int>jetflhads,
-        const double csvMin, 
-        double& btagsf, double& btagsf_bcUp, double& btagsf_bcDown, double& btagsf_lUp, double& btagsf_lDown
-        ) {
-
+   void getBTagSFs(
+      std::vector<double>jetcsvs,
+      std::vector<double>jetpts,
+      std::vector<double>jetetas,
+      std::vector<int>jetflhads,
+      const double csvMin, 
+      double& btagsf, double& btagsf_bcUp, double& btagsf_bcDown, double& btagsf_lUp, double& btagsf_lDown
+      ) {
+      
       //// Assign flavour notation as per b-tag SF .csv file 
       std::vector<BTagEntry::JetFlavor> jetfls ; 
       for ( int flhad : jetflhads ) {
-        BTagEntry::JetFlavor fl ; 
-        if ( abs(flhad) == 5 ) fl = BTagEntry::FLAV_B;
-        else if ( abs(flhad) == 4 ) fl = BTagEntry::FLAV_C;
-        else fl = BTagEntry::FLAV_UDSG;
-        jetfls.push_back(fl) ; 
+         BTagEntry::JetFlavor fl ; 
+         if ( abs(flhad) == 5 ) fl = BTagEntry::FLAV_B;
+         else if ( abs(flhad) == 4 ) fl = BTagEntry::FLAV_C;
+         else fl = BTagEntry::FLAV_UDSG;
+         jetfls.push_back(fl) ; 
       }
-
+      
       //// Get pT within bounds and double uncert if needed
       std::vector<int> uncscales ; 
       for ( auto idx : index(jetpts) ) {
@@ -159,21 +159,22 @@ class BTagSFUtils {
         double pt = jetpts.at(idx.first) ; 
         double uncscale(1.) ; 
         if ( fl == 0 || fl == 1) {
-          if ( pt < bfl_ptMin_ ) { pt = 30.01 ; uncscale *= 2 ; } 
-          if ( pt > bfl_ptMax_ ) { pt = 419.99 ; uncscale *= 2 ; } 
-          if ( fl == 1 ) uncscale *= 2 ; 
+           if ( pt < bfl_ptMin_ ) { pt = 30.01 ; uncscale *= 2 ; } 
+           if ( pt > bfl_ptMax_ ) { pt = 419.99 ; uncscale *= 2 ; } 
+           if ( fl == 1 ) uncscale *= 2 ; 
         }
         else {
-          if ( pt < lfl_ptMin_ ) { pt =20.01 ; uncscale *= 2 ; }
-          if ( pt > lfl_ptMax_ ) { pt = 999.99 ; uncscale *= 2; }
+           if ( pt < lfl_ptMin_ ) { pt =20.01 ; uncscale *= 2 ; }
+           if ( pt > lfl_ptMax_ ) { pt = 999.99 ; uncscale *= 2; }
         }
         jetpts.at(idx.first) = pt ; 
         uncscales.push_back(uncscale) ; 
       }
-
+      
       //// Get scale factors and efficiencies 
       std::vector<double> sfs, sfsUp, sfsDown, dsfsUp, dsfsDown, effs ;
       for ( auto idx : index(jetpts) ) {
+
         BTagEntry::JetFlavor fl = jetfls.at(idx.first) ; 
         int flhad = jetflhads.at(idx.first) ; 
         double pt = jetpts.at(idx.first) ; 
@@ -236,7 +237,7 @@ class BTagSFUtils {
         }
 
       }
-
+      
       return ; 
     }
 

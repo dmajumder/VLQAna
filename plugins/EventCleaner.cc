@@ -76,12 +76,12 @@ class EventCleaner : public edm::EDFilter {
     edm::ParameterSet BbHParams_                           ;
     edm::ParameterSet BtWParams_                           ;
 
-    PickGenPart pickTtZ                                    ; 
-    PickGenPart pickTtH                                    ; 
-    PickGenPart pickTbW                                    ; 
-    PickGenPart pickBbZ                                    ; 
-    PickGenPart pickBbH                                    ; 
-    PickGenPart pickBtW                                    ; 
+   PickGenPart pickTtZ                                    ; 
+   PickGenPart pickTtH                                    ; 
+   PickGenPart pickTbW                                    ; 
+   PickGenPart pickBbZ                                    ; 
+   PickGenPart pickBbH                                    ; 
+   PickGenPart pickBtW                                    ; 
 
 };
 
@@ -290,12 +290,13 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   string evttype(isData_ ? "EvtType_Data" : "EvtType_MC");
 
   if ( !isData_ ) {
+ 
     vlq::GenParticleCollection vlqTtZ = pickTtZ(evt) ;  
     vlq::GenParticleCollection vlqTtH = pickTtH(evt) ;  
     vlq::GenParticleCollection vlqTbW = pickTbW(evt) ;  
     vlq::GenParticleCollection vlqBbZ = pickBbZ(evt) ;  
     vlq::GenParticleCollection vlqBbH = pickBbH(evt) ;  
-    vlq::GenParticleCollection vlqBtW = pickBtW(evt) ;  
+    vlq::GenParticleCollection vlqBtW = pickBtW(evt) ; 
 
     if ( vlqTtZ.size() == 2 ) evttype = "EvtType_MC_tZtZ" ; 
     if ( vlqTtH.size() == 2 ) evttype = "EvtType_MC_tHtH" ; 
@@ -312,8 +313,18 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
     if ( vlqBbZ.size() == 1 && vlqBbH.size() == 1 ) evttype = "EvtType_MC_bZbH" ; 
     if ( vlqBbZ.size() == 1 && vlqBtW.size() == 1 ) evttype = "EvtType_MC_bZtW" ; 
     if ( vlqBbH.size() == 1 && vlqBtW.size() == 1 ) evttype = "EvtType_MC_bHtW" ; 
-  }
+ 
+    vlqTtZ.clear(); vlqTtH.clear(); vlqTbW.clear();
+    vlqBbZ.clear(); vlqBbH.clear(); vlqBbH.clear();
 
+    std::vector<vlq::GenParticle>(vlqTtZ).swap(vlqTtZ);
+    std::vector<vlq::GenParticle>(vlqTtH).swap(vlqTtH);
+    std::vector<vlq::GenParticle>(vlqTbW).swap(vlqTbW);
+    std::vector<vlq::GenParticle>(vlqBbZ).swap(vlqBbZ);
+    std::vector<vlq::GenParticle>(vlqBbH).swap(vlqBbH);
+    std::vector<vlq::GenParticle>(vlqBbH).swap(vlqBbH);
+  }
+  //cout << "evt type = " << evttype << endl;
   auto_ptr<int>ptr_evtno(new int(evtno)); 
   auto_ptr<int>ptr_lumisec(new int(lumisec)); 
   auto_ptr<int>ptr_runno(new int(runno)); 

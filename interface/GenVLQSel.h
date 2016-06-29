@@ -5,24 +5,31 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <TH1D.h>
+#include <TFile.h>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/Utils/interface/TFileDirectory.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Particle.h"
-
+#include "Analysis/VLQAna/interface/PickGenPart.h"
 //
 // class declaration
 //
 
 class GenVLQSel : public edm::EDProducer {
 public:
+   enum SIGNALTYPES_t {TPrime, BPrime} ;
    explicit GenVLQSel(const edm::ParameterSet&);
    ~GenVLQSel();
 private:
@@ -31,23 +38,22 @@ private:
    virtual void endJob();
    // ----------member data ---------------------------
    void setPointers(std::vector<const reco::Candidate *> decayList);
-
-   std::vector<int> ids_ ;
-   std::vector<int> statuses_ ;
-   bool checkstatus_ ;
-   std::vector<int> momids_ ;
-   bool checkmomid_ ;
    bool verbose_;
-
-   edm::InputTag l_genPartCharge ; 
-   edm::InputTag l_genPartE      ; 
-   edm::InputTag l_genPartEta    ; 
-   edm::InputTag l_genPartID     ; 
-   edm::InputTag l_genPartMass   ; 
-   edm::InputTag l_genPartMomID  ; 
-   edm::InputTag l_genPartPhi    ; 
-   edm::InputTag l_genPartPt     ; 
-   edm::InputTag l_genPartStatus ; 
+   SIGNALTYPES_t     type_ ;
+   edm::ParameterSet TtZParams_;
+   edm::ParameterSet TtHParams_;
+   edm::ParameterSet TbWParams_;
+   edm::ParameterSet BbZParams_;
+   edm::ParameterSet BbHParams_;
+   edm::ParameterSet BtWParams_;
+   PickGenPart pickTtZ;
+   PickGenPart pickTtH;
+   PickGenPart pickTbW;
+   PickGenPart pickBbZ;
+   PickGenPart pickBbH;
+   PickGenPart pickBtW;
+   std::map<std::string, TH1D*> h1_;
+   edm::Service<TFileService> fs;
 };
 #endif
 //
@@ -69,40 +75,40 @@ void GenVLQSel::setPointers(std::vector<const reco::Candidate *> decayList){
 //
 // constructors and destructor
 //
-GenVLQSel::GenVLQSel(const edm::ParameterSet& iConfig)
+GenVLQSel::GenVLQSel(const edm::ParameterSet& iConfig):
+   verbose_               (iConfig.getParameter<bool>              ("verbose"  )),
+   TtZParams_             (iConfig.getParameter<edm::ParameterSet> ("TtZParams")),
+   TtHParams_             (iConfig.getParameter<edm::ParameterSet> ("TtHParams")),
+   TbWParams_             (iConfig.getParameter<edm::ParameterSet> ("TbWParams")),
+   BbZParams_             (iConfig.getParameter<edm::ParameterSet> ("BbZParams")),
+   BbHParams_             (iConfig.getParameter<edm::ParameterSet> ("BbHParams")),
+   BtWParams_             (iConfig.getParameter<edm::ParameterSet> ("BtWParams")),
+   pickTtZ                (TtZParams_,consumesCollector()),
+   pickTtH                (TtHParams_,consumesCollector()),
+   pickTbW                (TbWParams_,consumesCollector()),
+   pickBbZ                (BbZParams_,consumesCollector()),
+   pickBbH                (BbHParams_,consumesCollector()),
+   pickBtW                (BtWParams_,consumesCollector())
 {
-   ids_            = iConfig.getParameter<std::vector<int>>("ids");
-   statuses_       = iConfig.getParameter<std::vector<int>>("statuses");
-   checkstatus_    = iConfig.getParameter<bool>("checkstatus");
-   momids_         = iConfig.getParameter<std::vector<int>>("momids");
-   checkmomid_     = iConfig.getParameter<bool>("checkmomid");
-   verbose_        = iConfig.getParameter<bool>("verbose");
-   l_genPartCharge = iConfig.getParameter<edm::InputTag>("genPartCharge");
-   l_genPartE      = iConfig.getParameter<edm::InputTag>("genPartE");
-   l_genPartEta    = iConfig.getParameter<edm::InputTag>("genPartEta"); 
-   l_genPartID     = iConfig.getParameter<edm::InputTag>("genPartID");
-   l_genPartMass   = iConfig.getParameter<edm::InputTag>("genPartMass"); 
-   l_genPartMomID  = iConfig.getParameter<edm::InputTag>("genPartMomID");
-   l_genPartPhi    = iConfig.getParameter<edm::InputTag>("genPartPhi");
-   l_genPartPt     = iConfig.getParameter<edm::InputTag>("genPartPt"); 
-   l_genPartStatus = iConfig.getParameter<edm::InputTag>("genPartStatus");
-
+   std::string sigType = iConfig.getParameter<std::string>("sigtype") ;
+   if ( sigType == "TPrime" ) type_ = TPrime ;
+   else if ( sigType== "BPrime" ) type_ = BPrime ;   
+   else edm::LogError(">>>>ERROR>>>>GenVLQSel >>>>  WrongSignalType: ") << type_<< " Check the signal type !!!" ;
    //register your products
-   produces<unsigned> ("TTtoWbZt");
-   produces<unsigned> ("TTtoWbHt"); 
-   produces<unsigned> ("TTtoHtZt");  
-   produces<unsigned> ("TTtoWbWb");
-   produces<unsigned> ("TTtoHtHt");
-   produces<unsigned> ("TTtoZtZt");
-
-   produces<unsigned> ("BBtoWtZb");
-   produces<unsigned> ("BBtoWtHb"); 
-   produces<unsigned> ("BBtoHbZb");  
-   produces<unsigned> ("BBtoWtWt");
-   produces<unsigned> ("BBtoHbHb");
-   produces<unsigned> ("BBtoZbZb");
+   produces<unsigned> ("tZbW");
+   produces<unsigned> ("tHbW"); 
+   produces<unsigned> ("tZtH");  
+   produces<unsigned> ("bWbW");
+   produces<unsigned> ("tHtH");
+   produces<unsigned> ("tZtZ");
+   produces<unsigned> ("bZtW");
+   produces<unsigned> ("bHtW"); 
+   produces<unsigned> ("bZbH");  
+   produces<unsigned> ("tWtW");
+   produces<unsigned> ("bHbH");
+   produces<unsigned> ("bZbZ");
 }
-
+                           
 
 GenVLQSel::~GenVLQSel()
 {
@@ -112,6 +118,22 @@ GenVLQSel::~GenVLQSel()
 void 
 GenVLQSel::beginJob()
 {
+   if(type_ == TPrime){
+      h1_["tZbW_Evts"] = fs->make<TH1D>("tZbW_Evts", "TT #rightarrow tZbW Evts", 2, 0.5, 2.5);
+      h1_["tHbW_Evts"] = fs->make<TH1D>("tHbW_Evts", "TT #rightarrow tHbW Evts", 2, 0.5, 2.5);
+      h1_["tZtH_Evts"] = fs->make<TH1D>("tZtH_Evts", "TT #rightarrow tZtH Evts", 2, 0.5, 2.5);
+      h1_["bWbW_Evts"] = fs->make<TH1D>("bWbW_Evts", "TT #rightarrow bWbW Evts", 2, 0.5, 2.5);
+      h1_["tHtH_Evts"] = fs->make<TH1D>("tHtH_Evts", "TT #rightarrow tHtH Evts", 2, 0.5, 2.5);
+      h1_["tZtZ_Evts"] = fs->make<TH1D>("tZtZ_Evts", "TT #rightarrow tZtZ Evts", 2, 0.5, 2.5);
+   }
+   else if (type_ == BPrime){
+      h1_["bZtW_Evts"] = fs->make<TH1D>("bZtW_Evts", "BB #rightarrow bZtW Evts", 2, 0.5, 2.5);
+      h1_["bHtW_Evts"] = fs->make<TH1D>("bHtW_Evts", "BB #rightarrow bHtW Evts", 2, 0.5, 2.5);
+      h1_["bZbH_Evts"] = fs->make<TH1D>("bZbH_Evts", "BB #rightarrow bZbH Evts", 2, 0.5, 2.5);
+      h1_["tWtW_Evts"] = fs->make<TH1D>("tWtW_Evts", "BB #rightarrow tWtW Evts", 2, 0.5, 2.5);
+      h1_["bHbH_Evts"] = fs->make<TH1D>("bHbH_Evts", "BB #rightarrow bHbH Evts", 2, 0.5, 2.5);
+      h1_["bZbZ_Evts"] = fs->make<TH1D>("bZbZ_Evts", "BB #rightarrow bZbZ Evts", 2, 0.5, 2.5);
+   }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

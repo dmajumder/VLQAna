@@ -3,12 +3,12 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('isData', False,
+options.register('isData', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zmumu',
+options.register('zdecaymode', 'zelel',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', True,
+options.register('doPUReweightingOfficial', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -38,12 +38,12 @@ options.register('signalType', '',
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
     )
-options.register('applyLeptonSFs', True,
+options.register('applyLeptonSFs', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
-options.register('applyBTagSFs', True,
+options.register('applyBTagSFs', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply b-tagging SFs to the MC"
@@ -63,7 +63,7 @@ options.register('optimizeReco', False,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('applyZptCorr', True,
+options.register('applyZptCorr', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
@@ -89,7 +89,6 @@ elif options.zdecaymode == "zelel":
 else:
   sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
-
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
@@ -99,6 +98,7 @@ if options.isData:
 
 if options.filterSignal == True and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
+
 process = cms.Process("OS2LAna")
 
 from inputFiles_cfi import * 
@@ -107,6 +107,7 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
+'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_175235/0000/B2GEDMNtuple_1.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
 'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_1.root',
@@ -141,7 +142,7 @@ process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
 process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
-process.ana.BoostedZCandParams.ptMin = cms.double(80.)
+#process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)

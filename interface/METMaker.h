@@ -11,7 +11,7 @@ using namespace edm;
 
 class METMaker {
 public:
-        METMaker (edm::ParameterSet const& pars, edm::ConsumesCollector && iC) ;
+    METMaker (edm::ParameterSet const& pars, edm::ConsumesCollector && iC) ;
 	~METMaker () ;
 	void operator () (edm::Event& evt, vlq::MetCollection& MET) ;
 
@@ -20,10 +20,10 @@ private:
 	edm::InputTag l_metFullPt 			;
 	edm::InputTag l_metFullPx 			;
 	edm::InputTag l_metFullPy 			;
-	edm::InputTag l_metFulluncorPhi 	        ;
-	edm::InputTag l_metFulluncorPt 		        ;
-	edm::InputTag l_metFulluncorSumEt         	;
- 
+	edm::InputTag l_metFulluncorPhi 	;
+	edm::InputTag l_metFulluncorPt 		;
+	edm::InputTag l_metFulluncorSumEt   ;
+
 	double METPtMin_ ;
 	double METPtMax_ ;
 };

@@ -14,8 +14,8 @@ class DileptonCandsProducer {
       massMax_(iConfig.getParameter<double> ("massMax")), 
       ptMin_(iConfig.getParameter<double> ("ptMin")), 
       ptMax_(iConfig.getParameter<double> ("ptMax")),
-      ptMaxLeadingLep_(iConfig.getParameter<double> ("ptMaxLeadingLep")),
-      ptMax2ndLeadingLep_(iConfig.getParameter<double> ("ptMax2ndLeadingLep"))  
+      ptMinLeadingLep_(iConfig.getParameter<double> ("ptMinLeadingLep")),
+      ptMin2ndLeadingLep_(iConfig.getParameter<double> ("ptMin2ndLeadingLep"))  
   {}
 
     template <class T>
@@ -24,8 +24,8 @@ class DileptonCandsProducer {
         for ( auto l2 = std::next(l1); l2 != leptons.end(); ++l2) {          
            if (l1->getCharge()*l2->getCharge() != -1 ) continue ;
            //cout << "1st, 2nd lep pt = " << l1->getPt() << " ," << l2->getPt() << endl;   
-           if (l1->getPt() < ptMaxLeadingLep_) continue;
-           if (l2->getPt() < ptMax2ndLeadingLep_) continue;  
+           if (l1->getPt() < ptMinLeadingLep_) continue;
+           if (l2->getPt() < ptMin2ndLeadingLep_) continue;  
            TLorentzVector p4l1(l1->getP4()), p4l2(l2->getP4()) ;
            double mass = (p4l1+p4l2).Mag() ; 
            double pt = (p4l1+p4l2).Pt() ; 
@@ -45,7 +45,7 @@ class DileptonCandsProducer {
     double massMax_ ; 
     double ptMin_ ; 
     double ptMax_ ; 
-    double ptMaxLeadingLep_;
-    double ptMax2ndLeadingLep_;
+    double ptMinLeadingLep_;
+    double ptMin2ndLeadingLep_;
 }; 
 #endif 
