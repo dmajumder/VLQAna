@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', True,
+options.register('doPUReweightingOfficial', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -33,7 +33,7 @@ options.register('filterSignal', False,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', '',
+options.register('signalType', 'EvtType_MC_bZbZ',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
@@ -66,7 +66,7 @@ options.register('optimizeReco', False,
 options.register('applyZptCorr', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
-    "Optimize mass reconstruction"
+    "Reweight Zpt for DY"
     )
 
 options.setDefault('maxEvents', -1)

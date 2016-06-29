@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 from array import array
-from ROOT import TH1D,TH2D,TFile,TMath,TCanvas,THStack,TLegend,TPave,TLine,TLatex
+from ROOT import TH1D,TH2D,TFile,TMath,TCanvas,THStack,TLegend,TPave,TLine,TLatex, TF1
 from ROOT import gROOT,gStyle,gPad,gStyle
 from ROOT import Double,kBlue,kRed,kOrange,kMagenta,kYellow,kCyan,kGreen,kGray,kBlack,kTRUE
 
@@ -26,17 +26,17 @@ parser.add_option('--globalSF', metavar='SF', type='float',
                   help='Global trigger SF (%default default)')
 
 parser.add_option('--plotDir', metavar='P', type='string', action='store',
-                  default='DecPlots',
+                  default='forMeh',
                   dest='plotDir',
                   help='output directory of plots')
 
 parser.add_option('--skimType', metavar='S', type='string', action='store',
-                  default='CR_Zmumu',
+                  default='CR_Zelel',
                   dest='skimType',
                   help='Skim type: CR_Zelel, CR_Zmumu, SR_Zelel, SR_Zmumu')
 
 parser.add_option('--processDir', metavar='pD', type='string', action='store',
-                  default='ana/pre',
+                  default='ana/cnt',
                   dest='processDir',
                   help='directory to read histograms from')
 
@@ -127,31 +127,33 @@ dy       = [
 #             [f_ST_s,          ST_s_xs,            ST_s_num,          lumi], 
 #            ]
 
-# vv       = [
-#             [f_ZZTo2L2Nu,     ZZTo2L2Nu_xs,       ZZTo2L2Nu_num,    lumi],
-#             [f_WZTo2L2Q,      WZTo2L2Q_xs,        WZTo2L2Q_num,     lumi],
-#             [f_WWTo2L2Nu,     WWTo2L2Nu_xs,       WWTo2L2Nu_num,    lumi],
-#            ]
+vv       = [
+            [f_ZZTo2L2Nu,     ZZTo2L2Nu_xs,       ZZTo2L2Nu_num,    lumi],
+            [f_WZTo2L2Q,      WZTo2L2Q_xs,        WZTo2L2Q_num,     lumi],
+            [f_WWTo2L2Nu,     WWTo2L2Nu_xs,       WWTo2L2Nu_num,    lumi],
+            [f_WZTo3LNu,    WZTo3LNu_xs,     WZTo3LNu_num,    lumi],
+            [f_ZZTo4L,     ZZTo4L_xs,      ZZTo4L_num, lumi],
+           ]
 
-#tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
+tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
 #tZbW_800 = [[f_TpTp_tZbW_800, TpTp800_xs,         TpTp800_num,       lumi]]
-#tZtH_800 = [[f_TpTp_tZtH_800, TpTp800_xs,         TpTp800_num,       lumi]]
+tZtH_800 = [[f_TpTp_tZtH_800, TpTp800_xs,         TpTp800_num,       lumi]]
 #tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
 #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
 #tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 #tZbW_1200 = [[f_TpTp_tZbW_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
-#tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 
-#bZbZ_800 = [[f_BpBp_bZbZ_800, BpBp800_xs,         BpBp800_num,       lumi]]
+bZbZ_800 = [[f_BpBp_bZbZ_800, BpBp800_xs,         BpBp800_num,       lumi]]
 #bZtW_800 = [[f_BpBp_bZtW_800, BpBp800_xs,         BpBp800_num,       lumi]]
-#bZbH_800 = [[f_BpBp_bZbH_800, BpBp800_xs,         BpBp800_num,       lumi]]
+bZbH_800 = [[f_BpBp_bZbH_800, BpBp800_xs,         BpBp800_num,       lumi]]
+bZbH_1000 = [[f_BpBp_bZbH_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]
 bZbZ_1000 = [[f_BpBp_bZbZ_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]                                                                                               
 #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]                                                                                               
-#tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]                                                                                               
-#bZbZ_1200 = [[f_BpBp_bZbZ_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
+bZbZ_1200 = [[f_BpBp_bZbZ_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
 #bZtW_1200 = [[f_BpBp_bZtW_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
-#bZbH_1200 = [[f_BpBp_bZbH_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
+bZbH_1200 = [[f_BpBp_bZbH_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
 
 
 h_data     = getHisto(dataLabel,       dataLeg,        pDir, var,  data,     kBlack,     verbose)
@@ -159,58 +161,60 @@ h_top      = getHisto(topLabel,        topLeg,         pDir, var,  top,      8, 
 h_dy       = getHisto(dyLabel,         dyLeg,          pDir, var,  dy,       90,         verbose)
 #h_wjets    = getHisto(wjLabel,         wjLeg,          pDir, var,  wjets,    kBlue,      verbose)
 #h_st       = getHisto(sTLabel,         sTLeg,          pDir, var,  st,       kCyan,      verbose)
-#h_vv       = getHisto(vvLabel,         vvLeg,          pDir, var,  vv,       kRed,       verbose)
-#h_tZtZ_800 = getHisto('TT_tZtZ_M800_', 'TT_tZtZ_M800', pDir, var,  tZtZ_800, kGreen+4,    verbose)
-#h_tZbW_800 = getHisto('TT_tZbW_M800_', 'TT_tZbW_M800', pDir, var,  tZbW_800, kGreen+3,  verbose)
-#h_tZtH_800 = getHisto('TT_tZtH_M800_', 'TT_tZtH_M800', pDir, var,  tZtH_800, kGreen+2, verbose)
-#tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#h_tZtZ_1200 = getHisto('TT_tZtZ_M1200_', 'TT_tZtZ_M1200', pDir, var,  tZtZ_1200, kBlue+4,    verbose)
-#h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
-#h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
+h_vv       = getHisto(vvLabel,         vvLeg,          pDir, var,  vv,       kBlue,       verbose)
+# h_tZtZ_800 = getHisto('TT_tZtZ_M800_', 'TT_tZtZ_M800', pDir, var,  tZtZ_800, kGreen+4,    verbose)
+# #h_tZbW_800 = getHisto('TT_tZbW_M800_', 'TT_tZbW_M800', pDir, var,  tZbW_800, kGreen+3,  verbose)
+# h_tZtH_800 = getHisto('TT_tZtH_M800_', 'TT_tZtH_M800', pDir, var,  tZtH_800, kGreen+2, verbose)
 
-#h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kRed,    verbose)
+# #h_tZtZ_1000 = getHisto('TT_tZtZ_M1000_', 'TT_tZtZ_M1000', pDir, var, tZtZ_1000, kYellow+2, verbose)
+# #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+# #h_tZtH_1000 =getHisto('TT_tZtH_M1000_', 'TT_tZtH_M1000', pDir, var, tZtH_1000, kYellow+4, verbose)
+
+# h_tZtZ_1200 = getHisto('TT_tZtZ_M1200_', 'TT_tZtZ_M1200', pDir, var,  tZtZ_1200, kBlue+4,    verbose)
+# #h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
+# h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
+
+h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kCyan,    verbose)
 #h_bZtW_800 = getHisto('BB_bZtW_M800_', 'BB_bZtW_M800', pDir, var,  bZtW_800, kRed+3,  verbose)
-#h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed+2, verbose)
-#h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan,    verbose)
+h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed, verbose)
+#h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan+2,    verbose)
 #h_bZtW_1000 = getHisto('BB_bZtW_M1000_', 'BB_bZtW_M1000', pDir, var,  bZtW_1000, kOrange+11,    verbose)
-#h_bZbH_1000 = getHisto('BB_bZbH_M1000_', 'BB_bZbH_M1000', pDir, var,  bZbH_1000, kCyan+1,    verbose)
-#h_bZbZ_1200 = getHisto('BB_bZbZ_M1200_', 'BB_bZbZ_M1200', pDir, var,  bZbZ_1200, kBlue,    verbose)
+#h_bZbH_1000 = getHisto('BB_bZbH_M1000_', 'BB_bZbH_M1000', pDir, var,  bZbH_1000, kRed+2,    verbose)
+h_bZbZ_1200 = getHisto('BB_bZbZ_M1200_', 'BB_bZbZ_M1200', pDir, var,  bZbZ_1200, kCyan+4,    verbose)
 #h_bZtW_1200 = getHisto('BB_bZtW_M1200_', 'BB_bZtW_M1200', pDir, var,  bZtW_1200, kMagenta+3,    verbose)
-#h_bZbH_1200 = getHisto('BB_bZbH_M1200_', 'BB_bZbH_M1200', pDir, var,  bZbH_1200, kMagenta+2,    verbose)
+h_bZbH_1200 = getHisto('BB_bZbH_M1200_', 'BB_bZbH_M1200', pDir, var,  bZbH_1200, kRed+4,    verbose)
 
 print 'before append'
 templates = []
 templates.append(h_dy)
 templates.append(h_top)
-#templates.append(h_vv)
+templates.append(h_vv)
 #templates.append(h_st)
 #templates.append(h_wjets)
-#templates.append(h_tZtZ_800)
-#templates.append(h_tZbW_800)
-#templates.append(h_tZtH_800)
+# templates.append(h_tZtZ_800)
+# #templates.append(h_tZbW_800)
+# templates.append(h_tZtH_800)
 # #templates.append(h_tZtZ_1000)
-# #templates.append(h_tZbW_1000)
+# # #templates.append(h_tZbW_1000)
 # #templates.append(h_tZtH_1000)
-#templates.append(h_tZtZ_1200)
-#templates.append(h_tZbW_1200)
-#templates.append(h_tZtH_1200)
-#templates.append(h_bZbZ_800)
+# templates.append(h_tZtZ_1200)
+# #templates.append(h_tZbW_1200)
+# templates.append(h_tZtH_1200)
+templates.append(h_bZbZ_800)
 #templates.append(h_bZtW_800)
-#templates.append(h_bZbH_800)
+templates.append(h_bZbH_800)
 #templates.append(h_bZbZ_1000)
 # #templates.append(h_bZtW_1000)
-# #templates.append(h_bZbH_1000)
-#templates.append(h_bZbZ_1200)
+#templates.append(h_bZbH_1000)
+templates.append(h_bZbZ_1200)
 #templates.append(h_bZtW_1200)
-#templates.append(h_bZbH_1200)
+templates.append(h_bZbH_1200)
 print 'before file'
 
-#f = TFile(plotDir+"/"+skimType+"/"+var+".root", "RECREATE")
-#for ihist in templates:
+# f = TFile(plotDir+"/"+skimType+"/"+var+".root", "RECREATE")
+# for ihist in templates:
 #    ihist.Write()
-#f.Close()
+# f.Close()
 print 'after file'
 #get background uncertainty
 h_bkg = h_top.Clone()
@@ -218,7 +222,7 @@ h_bkg.Reset()
 h_bkg.SetName("total bkg")
 h_bkg.Add(h_dy)
 h_bkg.Add(h_top)
-#h_bkg.Add(h_vv)
+h_bkg.Add(h_vv)
 #h_bkg.Add(h_wjets)
 #h_bkg.Add(h_st)
 
@@ -233,21 +237,26 @@ for ibin in range(0,nBins+1):
     iTop     = h_top.GetBinContent(ibin)
     iDY      = h_dy.GetBinContent(ibin)
 #    iWJ      = h_wjets.GetBinContent(ibin)
-#    iVV      = h_vv.GetBinContent(ibin)
+    iVV      = h_vv.GetBinContent(ibin)
     # stat error
     stat_err = (h_bkg.GetBinError(ibin))**2 
     # add approximate systematic uncertainty to each bin
     lumi_err = 0.04**2
-    btag_err = 0.017**2
+    if pDir == 'ana/pre':
+        btag_err = 0
+    else:
+        btag_err = 0.04**2
+
+    print 'btag err: '+str(btag_err)
     ID_err   = 0.03**2
     JES_err  = 0.05*0.05
     dy_err   = (0.1*iDY)**2
     top_err  = (0.2*iTop)**2
 #    st_err   = (0.3*iTop)**2
 #    wjet_err = (0.1*iWJ)**2
-#    vv_err   = (0.3*iVV)**2
+    vv_err   = (0.3*iVV)**2
 
-    new_err = stat_err + lumi_err + btag_err + ID_err + JES_err + dy_err + top_err# + wjet_err +st_err + vv_err
+    new_err = stat_err + lumi_err + btag_err + ID_err + JES_err + dy_err + top_err + vv_err# + wjet_err +st_err
 
     if h_bkg.GetBinError(ibin) != 0: h_bkg.SetBinError(ibin, TMath.Sqrt(new_err))
 
@@ -263,10 +272,14 @@ h_tot.Reset()
 h_tot.SetName("Total_"+h_tot.GetName().split('_',1)[1])
 h_tot.Add(h_top)
 h_tot.Add(h_dy)
+h_tot.Add(h_vv)
 #h_tot.Add(h_wjets)
 #h_tot.Add(h_st)
 
 print h_tot.GetName().split('_',1)[1]
+
+if var == 'chi_mass_cnt':
+    overUnderFlow(h_data)
 
 #=========Drawing==============
 integralError = Double(5)
@@ -280,36 +293,41 @@ print 'before file'
 #f = TFile(plotDir+"/"+var+".root", "RECREATE")
 print 'after file'
 for ihist in templates :
-    print'start loop'
-    #if var != 'cutFlow':
-    overUnderFlow(ihist)
-    print 'overunder done'
+    if var != 'cutflow':
+        overUnderFlow(ihist)
+    if var == 'eventCount':
+        print ihist.GetName()
+        for i in range(1,4):
+            print '\n\n\n\ region '+str(i)+' eventCount: '+str(ihist.GetBinContent(i))
     count = count+1
-    if count == 3:
+    if count == 4:
         print '\hline'
-    if count == 15:
+    if count == 16:
         print '\hline'
     ihist.IntegralAndError(bin1,bin2,integralError)
     if 'TT' in ihist.GetName() or 'BB' in ihist.GetName():
-        print '{0:<5} & {1:<5.2f} $\pm$ {2:<5.2f} \\\\ '.format(ihist.GetName().split('_')[1], ihist.Integral(bin1,bin2), integralError)
+        print '{0:<5} & {1:<5.2f} $\pm$ {2:<5.2f} \\\\ '.format(ihist.GetName().split('_')[1]+ihist.GetName().split('_')[2], ihist.Integral(bin1,bin2), integralError)
+        n=ihist.GetName()[:-3]
     else:      
         print '{0:<5} & {1:<5.2f} $\pm$ {2:<5.2f} \\\\ '.format(ihist.GetName().split('_')[0], ihist.Integral(bin1,bin2), integralError)
         n=ihist.GetName().split('_')[0]
-
+    #ihist.SetName("diel__"+n)
+    #ihist.Write()
 print '\hline'
-print '{0:<5} & {1:<5.0f} \\\\ '.format('Tot Bkg', h_tot.Integral(bin1,bin2), integralError)
+print '{0:<5} & {1:<5.0f} $\pm$ {2:<5.2f}\\\\ '.format('Tot Bkg', h_tot.Integral(bin1,bin2), integralError)
 print '\hline'
 print '{0:<5} & {1:<5.0f} \\\\ '.format(h_data.GetName().split('_')[0], h_data.Integral())
 print '\end{tabular}'
 #print 'bkg : ', h_bkg.Integral(ibin,bin2), 'tot : ', h_tot.Integral(ibin,bin2)
 
-h_data.SetName("dimu__DATA")
-h_data.Write()
+#h_data.SetName("diel__DATA")
+#h_data.Write()
 #f.Close()
 
 hs = THStack("","")
 
-for ihist in reversed(templates[0:2]):
+for ihist in reversed(templates[0:3]):
+    #ihist.GetXaxis().SetRangeUser(0, 600)
     hs.Add(ihist)
     print 'histo added', ihist.GetName()
 
@@ -336,21 +354,30 @@ c1.cd(1)
 
 #t = c1.GetTopMargin()
 
-if h_data.GetMaximum() > hs.GetMaximum():
-    hs.SetMaximum(h_data.GetMaximum())
-else:
-    h_data.SetMaximum(hs.GetMaximum())
+# if h_data.GetMaximum() > hs.GetMaximum():
+#     hs.SetMaximum(h_data.GetMaximum())
+# else:
+#     h_data.SetMaximum(hs.GetMaximum())
 
 #hs.SetMaximum(hs.GetMaximum()*5)
 hs.SetMinimum(0.1)
 gPad.SetLogy()
+if var == 'cutflow':
+    data_nbins = h_data.GetNbinsX()
+    print data_nbins
+    for a in range(0, 1):
+        h_data.SetBinContent(data_nbins-a, -1)
 
+h_data.GetXaxis().SetRangeUser(0, 400)
+hs.Draw()
+hs.GetXaxis().SetRangeUser(0, 400)
 hs.Draw("Hist")
 h_bkg.Draw("e2 same")
 h_data.Draw("same")
 
-for ihist in reversed(templates[2:8]):
+for ihist in reversed(templates[3:15]):
     print 'overlaying, ', ihist.GetName() 
+    #ihist.GetXaxis().SetRangeUser(0, 600)
     ihist.Draw("ehist same")
 
 xTitle= h_top.GetXaxis().GetTitle()
@@ -402,10 +429,12 @@ for ibin in range(1, nBins+1):
 
 prepareRatio(h_ratio, h_ratio_bkg, scale, xTitle)
 
+fit = TF1("f1", "pol1", 200, 4000)
 line = TLine(bMin, 1, bMax, 1)
 line.SetLineColor(kBlack)
 h_ratio.Draw("")
 h_ratio_bkg.Draw("e2same")
+#h_ratio.Fit("f1", "R")
 h_ratio.Draw("same")
 line.Draw()
 

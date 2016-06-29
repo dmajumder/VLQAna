@@ -93,7 +93,6 @@ class OS2LAna : public edm::EDFilter {
     const double STMin_                          ; 
     const bool filterSignal_                     ;
     const bool additionalPlots_                  ;
-    const bool doEWKcorr_                        ;
     const std::string signalType_                ;
     const std::string zdecayMode_                ;
     const bool optimizeReco_                     ;
@@ -120,7 +119,6 @@ class OS2LAna : public edm::EDFilter {
     std::map<std::string, TH2D*> h2_             ; 
     std::string lep; 
     PickGenPart genpart                          ;
-    const std::string file_EWK_                            ;
     const std::string fnamebtagSF_               ;
     std::unique_ptr<BTagSFUtils> btagsfutils_    ; 
 };
@@ -167,7 +165,6 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   STMin_                  (iConfig.getParameter<double>            ("STMin")), 
   filterSignal_           (iConfig.getParameter<bool>              ("filterSignal")), 
   additionalPlots_        (iConfig.getParameter<bool>              ("additionalPlots")), 
-  doEWKcorr_              (iConfig.getParameter<bool>              ("doEWKcorr")),
   signalType_             (iConfig.getParameter<std::string>       ("signalType")), 
   zdecayMode_             (iConfig.getParameter<std::string>       ("zdecayMode")),
   optimizeReco_           (iConfig.getParameter<bool>              ("optimizeReco")),
@@ -190,7 +187,6 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   jetWTaggedmaker         (iConfig.getParameter<edm::ParameterSet> ("jetWTaggedselParams"),consumesCollector()),
   jetTopTaggedmaker       (iConfig.getParameter<edm::ParameterSet> ("jetTopTaggedselParams"),consumesCollector()),   
   lep                     (iConfig.getParameter<std::string>       ("lep")), 
-  //  file_EWK_               (iConfig.getParameter<std::string>              ("File_EWK"))
   genpart                 (genParams_, consumesCollector()),
   fnamebtagSF_            (iConfig.getParameter<std::string>       ("fnamebtagSF")),
   btagsfutils_            (new BTagSFUtils(fnamebtagSF_,BTagEntry::OP_MEDIUM,30., 670., 30., 670., 20., 1000.))
@@ -295,11 +291,15 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   HT htak4(goodAK4Jets) ; 
   double ht = htak4.getHT();
-  cout << "ht: " << ht << endl;
-  cout << evtwt << endl;
-  if (applyZptCorr_)
-    evtwt *= htCorr(ht, 1.19587, -0.000547296);
-  cout << "ht corr: " << htCorr(ht,  1.19587, -0.000547296) << " evtwt: " << evtwt;
+    if (applyZptCorr_ && *h_evttype.product() != "EvtType_Data"){
+  double corr(1);
+  if (zdecayMode_ == "zmumu")
+    corr = htCorr(ht, 1.16045, -0.000492635);
+  else if (zdecayMode_ == "zelel")
+    corr = htCorr(ht, 1.456, -0.000695945);
+  if (corr > 0)
+    evtwt *= corr;
+}
 
  ////////////////////////////////////////////////////////// 
   //Fill N-1 selected plots for dilepton mass, Ht, ad Njets
@@ -321,9 +321,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else return false;
 
   //Fill HT: >=3 jets, && Z mass
-  h1_["ht_pre"] -> Fill(htak4.getHT(), evtwt) ; 
+  //h1_["ht_pre"] -> Fill(htak4.getHT(), evtwt) ; 
    
-  // at least HT > 150 in event
+  // at least HT > 200 in event
   if ( htak4.getHT() > HTMin_ ) h1_["cutflow"] -> Fill(4, evtwt) ;  
   else return false ; 
 
@@ -332,6 +332,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   ///////////////////////////////////////////// 
   // fill rest of the plots after pre-selection
   /////////////////////////////////////////////
+
+  // ht
+  h1_["ht_pre"] -> Fill(htak4.getHT(), evtwt);
 
   double ST = htak4.getHT() ;
   ST += zll.at(0).getPt() + goodMet.at(0).getFullPt(); 

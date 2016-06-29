@@ -3,20 +3,20 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/reweightZ/Muons/'
+path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/forPres/bZbZ/electrons/'
 pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
 
 ch = 'CR_Zmumu'
 
 #f_Data_Oct2015 = TFile(path+'')
-#f_Data_PromptReco = TFile(path+'DoubleMuon_prompt.root')
-f_Data_PromptReco = TFile(path+'DoubleMuon_prompt.root')
+f_Data_PromptReco = TFile(path+'electrons.root')
+#f_Data_PromptReco = TFile(path+'Data.root')
 
-f_DY100to200 = TFile(path+'dy_HT100-200.root')
-f_DY200to400 = TFile(path+'dy_HT200-400.root')
-f_DY400to600 = TFile(path+'dy_HT400-600.root')
-f_DY600toInf = TFile(path+'dy_HT600-Inf.root')
+f_DY100to200 = TFile(path+'dy_ht100-200.root')
+f_DY200to400 = TFile(path+'dy_ht200-400.root')
+f_DY400to600 = TFile(path+'dy_ht400-600.root')
+f_DY600toInf = TFile(path+'dy_ht600-Inf.root')
 #f_DYmcnlo    = TFile(path+'dy_inclusive.root')
 
 # # f_WJ100to200 = TFile(path+'WJetsToLNu_HT-100To200_os2lana_v1_'+ch+'.root')
@@ -33,33 +33,35 @@ f_DY600toInf = TFile(path+'dy_HT600-Inf.root')
 # # f_ST_t_ex1      = TFile(path+'ST_t_4f_amcatnlo-pythia8_ext1_os2lana_v1_'+ch+'.root')
 # # f_ST_s          = TFile(path+'ST_s_4f_amcatnlo-pythia8_os2lana_v1_'+ch+'.root')
 
-# # f_ZZTo2L2Nu     = TFile(path+'ZZTo2L2Nu_powheg_pythia8_os2lana_v1_'+ch+'.root')
-# # f_WZTo2L2Q      = TFile(path+'WZTo2L2Q_amcatnlo_os2lana_v1_'+ch+'.root')
-# # f_WWTo2L2Nu     = TFile(path+'WWTo2L2Nu_powheg_os2lana_v1_'+ch+'.root')
+f_ZZTo2L2Nu     = TFile(path+'ZZto2.root')
+f_WZTo2L2Q      = TFile(path+'WZto2.root')
+f_WWTo2L2Nu   = TFile(path+'WW.root')
+f_WZTo3LNu      = TFile(path+'WZto3.root')
+f_ZZTo4L            = TFile(path+'ZZto4.root')
 
 f_ttbar         = TFile(path+'ttbar.root')
 
-#f_TpTp_tZtZ_800 = TFile(path+'tprime800.root')
+f_TpTp_tZtZ_800 = TFile(path+'tZtZ800.root')
 #f_TpTp_tZbW_800 = TFile(path+'TpTp_tZbW_M-800.root')
-#f_TpTp_tZtH_800 = TFile(path+'TpTp_tZtH_M-800.root')
-#f_TpTp_tZtZ_1000 = TFile(path+'TpTp_tZtZ_M-1000.root')
+f_TpTp_tZtH_800 = TFile(path+'tZtH800.root')
+f_TpTp_tZtZ_1000 = TFile(path+'tZtZ1000.root')
 #f_TpTp_tZbW_1000 = TFile(path+'TpTp_tZbW_M-1000.root')
-#f_TpTp_tZtH_1000 = TFile(path+'TpTp_tZtH_M-1000.root')
-#f_TpTp_tZtZ_1200 = TFile(path+'tprime1200.root')
+f_TpTp_tZtH_1000 = TFile(path+'tZtH1000.root')
+f_TpTp_tZtZ_1200 = TFile(path+'tZtZ1200.root')
 #f_TpTp_tZbW_1200 = TFile(path+'TpTp_tZbW_M-1200.root')
-#f_TpTp_tZtH_1200 = TFile(path+'TpTp_tZtH_M-1200.root')
+f_TpTp_tZtH_1200 = TFile(path+'tZtH1200.root')
 
-#f_BpBp_bZbZ_800 = TFile(path+'bprime800.root')
+f_BpBp_bZbZ_800 = TFile(path+'bZbZ800.root')
 #f_BpBp_bZtW_800 = TFile(path+'BpBp_bZtW_M-800.root')
-#f_BpBp_bZbH_800 = TFile(path+'BpBp_bZbH_M-800.root')
+f_BpBp_bZbH_800 = TFile(path+'bZbH800.root')
 
-f_BpBp_bZbZ_1000 = TFile(path+'bprime1000.root')
+f_BpBp_bZbZ_1000 = TFile(path+'bZbZ1000.root')
 f_BpBp_bZbH_1000 = TFile(path+'bZbH1000.root')
 
 
-#f_BpBp_bZbZ_1200 = TFile(path+'bprime1200.root')
+f_BpBp_bZbZ_1200 = TFile(path+'bZbZ1200.root')
 #f_BpBp_bZtW_1200 = TFile(path+'BpBp_bZtW_M-1200.root')
-#f_BpBp_bZbH_1200 = TFile(path+'BpBp_bZbH_M-1200.root')
+f_BpBp_bZbH_1200 = TFile(path+'bZbH1200.root')
 
 
 #===== cross sections (pb)==========
@@ -84,6 +86,8 @@ ST_s_xs           = 3.36    *gSF
 ZZTo2L2Nu_xs      = 0.564   *gSF
 WZTo2L2Q_xs       = 3.22    *gSF
 WWTo2L2Nu_xs      = 12.178  *gSF
+WZTo3LNu_xs =   4.42965 * gSF
+ZZTo4L_xs          = 1.212 * gSF
 TpTp800_xs        = 0.196   *gSF  
 TpTp900_xs        = 0.0903  *gSF
 TpTp1000_xs       = 0.044   *gSF
@@ -93,6 +97,12 @@ BpBp800_xs        = 0.196   *gSF
 BpBp1000_xs       = 0.044   *gSF
 BpBp1200_xs       = 0.0118  *gSF
 
+# BpBp800_xs = 1.
+# BpBp1000_xs = 1.
+# BpBp1200_xs = 1.
+# TpTp800_xs= 1.
+# TpTp1000_xs = 1.
+# TpTp1200_xs = 1.
 
 #===== Number of generated events ======
 
@@ -117,21 +127,24 @@ ST_s_num         =  984400.
 ZZTo2L2Nu_num    =  8719200.
 WZTo2L2Q_num     =  31394787.
 WWTo2L2Nu_num    =  1965200.
-TpTp800_num      =  788200.
+WZTo3LNu_num = 2000000.
+ZZTo4L_num          =10747136.
+TpTp800_num      =  788200./9.
 TpTp900_num      =  832800./9.
-TpTp1000_num     =  0.
-TpTp1200_num     =  817800.
+TpTp1000_num     =  818600./9.
+TpTp1200_num     =  817800./9.
 TpTp1500_num     =  812800./9.
 BpBp700_num      =  832200./9.
-BpBp800_num      =  831200.
+BpBp800_num      =  831200./9.
 BpBp900_num      =  832800./9.
 BpBp1000_num     =  822800./9.
-BpBp1200_num     =  830400.
+BpBp1200_num     =  830400./9.
 BpBp1500_num     =  812800./9.
 
 
 # Legend
-leg = TLegend(0.74,0.90,0.96,0.40)
+leg = TLegend(0.74,0.90,0.96,0.50)
+#leg = TLegend(0.5, .90, 0.74, .65)
 leg.SetBorderSize(0)
 leg.SetFillColor(10)
 leg.SetLineColor(10)
@@ -159,8 +172,8 @@ def prepareRatio(h_ratio, h_ratiobkg, scale, xTitle):
     h_ratio.GetYaxis().SetTitle("Data / Bkg")
     h_ratio.GetXaxis().SetTitle(xTitle)   
     h_ratio.SetMarkerStyle(8) 
-    h_ratio.SetMaximum(3)#3
-    h_ratio.SetMinimum(-1)#-1
+    h_ratio.SetMaximum(2)#3
+    h_ratio.SetMinimum(0)#-1
     h_ratio.GetYaxis().SetLabelSize(0.06*scale)#0.06
     h_ratio.GetYaxis().SetTitleOffset(1.00/scale*0.5)
     h_ratio.GetYaxis().SetTitleSize(0.08*scale)#0.08
@@ -206,6 +219,7 @@ def setCosmetics(hist, legname, hname, color):
     hist.Rebin(rebinS)
     hist.SetLineColor(color)
     hist.SetName(hname)
+    hist.GetXaxis().SetRangeUser(0,600)
     if 'Data' in hname:
         leg.AddEntry(hist, legname, 'pl')
         hist.SetMarkerStyle(8)
@@ -233,15 +247,21 @@ def getHisto( label, leg, dir, var, Samples, color, verbose) :
                 hist.Integral(), hist.GetEntries(), xs * lumi /nevt
                 )
         hist.Sumw2()    
+        # if ifile == 'f_Data_PromptReco':
+        #     xs = 0
+        #     hist.SetMarkerColorAlpha(color, 100)
         hist.Scale( xs * lumi /nevt)
+        #hist.Rebin(4)
         histos.append( hist )
         
     histo = histos[0]
     setCosmetics(histo, leg, label+var, color) 
+    
     for ihisto in range(1, len(histos) ):
         #print 'ihisto =', ihisto, 'integral', histos[ihisto].Integral(), ', entries', histos[ihisto].GetEntries()
         histo.Add( histos[ihisto] )
         #print 'after addition', histo.Integral()
+        #histo.Rebin(2)
     if verbose:    
         print 'newName: {0:<5}, Entries:{1:5.2f},  newIntegral: {2:5.2f}'.format(label+var, histo.GetEntries(), histo.Integral() )   
     return histo
