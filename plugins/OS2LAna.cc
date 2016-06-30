@@ -681,8 +681,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      bGen = reco.getGen(genPartsInfo, 5, 8000002);
      bbarGen = reco.getGen(genPartsInfo, -5, 8000002);
      if (bosonMass_ == 91.2){
-       q1 = reco.getGen(genPartsInfo, 1, 5, 23);
-       q2 = reco.getGen(genPartsInfo, -5, -1, 23);
+       q1 = reco.getGen(genPartsInfo, 1, 4, 23);
+       q2 = reco.getGen(genPartsInfo, -4, -1, 23);
      }
      else{
        q1 = reco.getGen(genPartsInfo, 1, 5, 25);

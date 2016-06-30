@@ -123,6 +123,9 @@ bool Skim::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      }
   }  
 
+  CandidateFilter zllfilter(ZCandParams_);
+  zllfilter(dileptons, zll);
+
   // Get jets and clean them w.r.t leptons:
   vlq::JetCollection goodAK4Jets;
   jetAK4maker(evt, goodAK4Jets) ;
@@ -149,6 +152,9 @@ bool Skim::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   //Fill the events with Trig and dilepton cut applied
   h1_["cutflow"] -> Fill(1, evtwt) ;
 
+  if (zll.size() > 0) {h1_["cutflow"]->Fill(4, evtwt);}
+  else return false;
+
   //at least 3 AK4 jets in event
   if (goodAK4Jets.size() > 2 ) {h1_["cutflow"] -> Fill(2, evtwt) ;}
   else return false;
@@ -157,11 +163,11 @@ bool Skim::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if ( htak4.getHT() > HTMin_ ) h1_["cutflow"] -> Fill(3, evtwt) ;
   else return false ;
 
-  //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
-  CandidateFilter zllfilter(ZCandParams_) ; 
-  zllfilter(dileptons, zll);
-  if(zll.size() > 0) {h1_["cutflow"] -> Fill(4, evtwt) ;}
-  else return false ;
+  // //Z mass candidate filter: 75 < M < 105, lead pt > 45, 2nd pt > 25, Z pt > 0
+  // CandidateFilter zllfilter(ZCandParams_) ; 
+  // zllfilter(dileptons, zll);
+  // if(zll.size() > 0) {h1_["cutflow"] -> Fill(4, evtwt) ;}
+  // else return false ;
 
   return true ; 
 }

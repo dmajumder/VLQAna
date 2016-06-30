@@ -13,7 +13,7 @@ options.register('doPUReweightingOfficial', True,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
     )
-options.register('applyLeptonSFs', False,
+options.register('applyLeptonSFs', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
@@ -23,7 +23,7 @@ options.register('isData', False,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('applyHtCorr', True,
+options.register('applyHtCorr', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply corrections to efficiency due to HT"
@@ -38,7 +38,7 @@ options.register('sigType', 'BPrime',
     VarParsing.varType.string,
     "TT or BB? Choose: 'TPrime' or 'BPrime'"
     )
-options.register('zdecaymode', 'zelel',
+options.register('zdecaymode', 'zmumu',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -49,7 +49,7 @@ options.register('applyDYNLOCorr', False, ### Set to true only for DY process ##
     "Apply DY EWK k-factor to DY MC"
     )
 
-options.setDefault('maxEvents', 1000)
+options.setDefault('maxEvents', 10000)
 options.parseArguments()
 print options
 
