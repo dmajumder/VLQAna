@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', False,
+options.register('doPUReweightingOfficial', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -63,10 +63,15 @@ options.register('optimizeReco', True,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('applyZptCorr', False,
+options.register('applyHtCorr', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
+    )
+options.register('doSkim', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Produce skim 1 or 0"
     )
 
 options.setDefault('maxEvents', -1)
@@ -78,13 +83,11 @@ if options.zdecaymode == "zmumu":
   hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-      #"HLT_DoubleMu8_Mass8_PFHT300_v",
       ]
 elif options.zdecaymode == "zelel":
   hltpaths = [
       "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-      #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
       ]
 else:
   sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
@@ -96,7 +99,7 @@ if options.isData:
   options.applyLeptonSFs = False
   applyZptCorr = False
 
-if options.filterSignal == True and len(options.signalType) == 0:
+if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
 process = cms.Process("OS2LAna")
@@ -107,9 +110,8 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-#'file:Skim.root'
+     'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_175235/0000/B2GEDMNtuple_1.root',
-'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
 #'root://cms-xrd-global.cern.ch//store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_102503/0000/B2GEDMNtuple_1.root',
     ) 
@@ -118,6 +120,9 @@ process.source = cms.Source(
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
+
+## Output Report
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
 process.evtcleaner.isData = options.isData 
@@ -136,7 +141,8 @@ process.ana = ana.clone(
     applyBTagSFs = cms.bool(options.applyBTagSFs),
     applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
-    applyZptCorr = cms.bool(options.applyZptCorr),
+    applyHtCorr = cms.bool(options.applyHtCorr),
+    doSkim       = cms.bool(options.doSkim),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
@@ -155,6 +161,17 @@ process.TFileService = cms.Service("TFileService",
          options.outFileName
          )
        )
+process.out = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string(options.outFileName.split('.',1)[0]+'_skim.root'),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('p')),
+    dropMetaData = cms.untracked.string('DROPPED'),#'type_label_instance_process'
+    outputCommands = cms.untracked.vstring('keep *',
+                                           'drop *_evtcleaner_*_*',
+                                           'drop *_photons_*_*',
+                                           'drop *_photonjets_*_*',
+                                           'drop *_*Puppi_*_*',
+                                           )
+    )
 
 ## Event counters
 from Analysis.EventCounter.eventcounter_cfi import eventCounter
@@ -162,16 +179,16 @@ process.allEvents = eventCounter.clone(isData=options.isData)
 process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
-process.load("Analysis.VLQAna.VLQCandProducer_cff")
 
 process.p = cms.Path(
-    process.allEvents
-    *process.evtcleaner
-    *process.cleanedEvents
-    *cms.ignore(process.ana)
-    * process.finalEvents
-    )
+  process.allEvents
+  *process.evtcleaner
+  #*process.cleanedEvents
+  *cms.ignore(process.ana)
+  #* process.finalEvents
+  )
 
-#process.schedule = cms.Schedule(process.p)
+if options.doSkim:
+  process.outpath = cms.EndPath(process.out)
 
 #open('dump.py','w').write(process.dumpPython())

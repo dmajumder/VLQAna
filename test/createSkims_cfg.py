@@ -49,7 +49,7 @@ options.register('applyDYNLOCorr', False, ### Set to true only for DY process ##
     "Apply DY EWK k-factor to DY MC"
     )
 
-options.setDefault('maxEvents', 10000)
+options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
 
@@ -121,11 +121,13 @@ process.skim = skim.clone(
     applyHtCorr = cms.bool(options.applyHtCorr),
     )
 process.skim.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
+process.skim.verbose                 = cms.bool(True)
+
 
 if options.runSignal and not options.isData:
   process.p = cms.Path(
-    process.allEvents
-    *process.genInfo 
+     process.genInfo 
+    *process.allEvents
     *process.evtcleaner
     *process.skim
     *process.finalEvents

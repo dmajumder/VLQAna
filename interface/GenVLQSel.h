@@ -29,7 +29,7 @@
 
 class GenVLQSel : public edm::EDProducer {
 public:
-   enum SIGNALTYPES_t {TPrime, BPrime} ;
+   // enum SIGNALTYPES_t {TPrime, BPrime} ;
    explicit GenVLQSel(const edm::ParameterSet&);
    ~GenVLQSel();
 private:
@@ -39,7 +39,7 @@ private:
    // ----------member data ---------------------------
    void setPointers(std::vector<const reco::Candidate *> decayList);
    bool verbose_;
-   SIGNALTYPES_t     type_ ;
+   //SIGNALTYPES_t     type_ ;
    edm::ParameterSet TtZParams_;
    edm::ParameterSet TtHParams_;
    edm::ParameterSet TbWParams_;
@@ -90,10 +90,10 @@ GenVLQSel::GenVLQSel(const edm::ParameterSet& iConfig):
    pickBbH                (BbHParams_,consumesCollector()),
    pickBtW                (BtWParams_,consumesCollector())
 {
-   std::string sigType = iConfig.getParameter<std::string>("sigtype") ;
-   if ( sigType == "TPrime" ) type_ = TPrime ;
-   else if ( sigType== "BPrime" ) type_ = BPrime ;   
-   else edm::LogError(">>>>ERROR>>>>GenVLQSel >>>>  WrongSignalType: ") << type_<< " Check the signal type !!!" ;
+   //std::string sigType = iConfig.getParameter<std::string>("sigtype") ;
+   //if ( sigType == "TPrime" ) type_ = TPrime ;
+   //else if ( sigType== "BPrime" ) type_ = BPrime ;   
+   //else edm::LogError(">>>>ERROR>>>>GenVLQSel >>>>  WrongSignalType: ") << type_<< " Check the signal type !!!" ;
    //register your products
    produces<unsigned> ("tZbW");
    produces<unsigned> ("tHbW"); 
@@ -118,22 +118,22 @@ GenVLQSel::~GenVLQSel()
 void 
 GenVLQSel::beginJob()
 {
-   if(type_ == TPrime){
+   //if(type_ == TPrime){
       h1_["tZbW_Evts"] = fs->make<TH1D>("tZbW_Evts", "TT #rightarrow tZbW Evts", 2, 0.5, 2.5);
       h1_["tHbW_Evts"] = fs->make<TH1D>("tHbW_Evts", "TT #rightarrow tHbW Evts", 2, 0.5, 2.5);
       h1_["tZtH_Evts"] = fs->make<TH1D>("tZtH_Evts", "TT #rightarrow tZtH Evts", 2, 0.5, 2.5);
       h1_["bWbW_Evts"] = fs->make<TH1D>("bWbW_Evts", "TT #rightarrow bWbW Evts", 2, 0.5, 2.5);
       h1_["tHtH_Evts"] = fs->make<TH1D>("tHtH_Evts", "TT #rightarrow tHtH Evts", 2, 0.5, 2.5);
       h1_["tZtZ_Evts"] = fs->make<TH1D>("tZtZ_Evts", "TT #rightarrow tZtZ Evts", 2, 0.5, 2.5);
-   }
-   else if (type_ == BPrime){
+      //}
+      //else if (type_ == BPrime){
       h1_["bZtW_Evts"] = fs->make<TH1D>("bZtW_Evts", "BB #rightarrow bZtW Evts", 2, 0.5, 2.5);
       h1_["bHtW_Evts"] = fs->make<TH1D>("bHtW_Evts", "BB #rightarrow bHtW Evts", 2, 0.5, 2.5);
       h1_["bZbH_Evts"] = fs->make<TH1D>("bZbH_Evts", "BB #rightarrow bZbH Evts", 2, 0.5, 2.5);
       h1_["tWtW_Evts"] = fs->make<TH1D>("tWtW_Evts", "BB #rightarrow tWtW Evts", 2, 0.5, 2.5);
       h1_["bHbH_Evts"] = fs->make<TH1D>("bHbH_Evts", "BB #rightarrow bHbH Evts", 2, 0.5, 2.5);
       h1_["bZbZ_Evts"] = fs->make<TH1D>("bZbZ_Evts", "BB #rightarrow bZbZ Evts", 2, 0.5, 2.5);
-   }
+      //}
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

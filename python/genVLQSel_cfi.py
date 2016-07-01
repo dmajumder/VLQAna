@@ -3,8 +3,8 @@ import FWCore.ParameterSet.Config as cms
 from Analysis.VLQAna.VLQParams_cfi import *
 
 genParams = cms.EDProducer("GenVLQSel",
-   verbose                    = cms.bool(False),
-   sigtype                    = cms.string("TPrime"),
+   verbose                    = cms.bool(True),
+   #sigtype                    = cms.string("TPrime"),
    TtZParams                  = cms.PSet(genPartParams,TtZParams), 
    TtHParams                  = cms.PSet(genPartParams,TtHParams), 
    TbWParams                  = cms.PSet(genPartParams,TbWParams), 
