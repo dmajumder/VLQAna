@@ -738,26 +738,32 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_["lepBJetMass"] ->Fill(lepBJet, evtwt);
 
      }
-  pair<double, double> chi2_result;
+  pair<double, double> chi2_result_Z;
+  pair<double, double> chi2_result_H;
   if (goodAK4Jets.size() >= 4){
-     chi2_result = reco.doReco(goodAK4Jets, bosonMass_, Leptons);
+     chi2_result_Z = reco.doReco(goodAK4Jets, 91.2, Leptons);
+     chi2_result_H = reco.doReco(goodAK4Jets, 125., Leptons); 
   }
   else if (goodAK4Jets.size() == 3){
-     chi2_result.first = -998;
-     chi2_result.second = -998;
+     chi2_result_Z.first = -998;
+     chi2_result_Z.second = -998;
+     chi2_result_H.first = -998;
+     chi2_result_H.second = -998;
   }
   else{
-     chi2_result.first = -999;
-     chi2_result.second = -999;
+     chi2_result_Z.first = -999;
+     chi2_result_Z.second = -999;
+     chi2_result_H.first  = -999;
+     chi2_result_H.second = -999;
   }
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
-  h1_["chi2_chi"] ->Fill(chi2_result.first, evtwt);
-  h1_["sqrtChi2"] ->Fill(sqrt(chi2_result.first), evtwt);
-  if (chi2_result.second == -998)
+  h1_["chi2_chi_Z"] ->Fill(chi2_result_Z.first, evtwt);
+  h1_["sqrtChi2_Z"] ->Fill(sqrt(chi2_result_Z.first), evtwt);
+  if (chi2_result_Z.second == -998)
     h1_["3jets"] ->Fill(1, evtwt);
-  else if (chi2_result.second > 0)
-    h1_["chi2_mass"] ->Fill(chi2_result.second, evtwt);
+  else if (chi2_result_Z.second > 0)
+    h1_["chi2_mass_Z"] ->Fill(chi2_result_Z.second, evtwt);
 
   return true ; 
   }
@@ -901,9 +907,9 @@ void OS2LAna::beginJob() {
      }
      
      h1_["ZJetMasslep"] = sig.make<TH1D>("ZJetMasslep", ";M (Z Jet Leptonic);;", 20, 0., 200.);
-     h1_["chi2_chi"] = sig.make<TH1D>("chi2_chi", ";#chi^{2};;", 100, 0., 500.);
-     h1_["sqrtChi2"] = sig.make<TH1D>("sqrtChi2", ";#chi;;", 100, 0., 500.);
-     h1_["chi2_mass"] = sig.make<TH1D>("chi_mass", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
+     h1_["chi2_chi_Z"] = sig.make<TH1D>("chi2_chi_Z", ";#chi^{2};;", 100, 0., 500.);
+     h1_["sqrtChi2_Z"] = sig.make<TH1D>("sqrtChi2_Z", ";#chi;;", 100, 0., 500.);
+     h1_["chi2_mass_Z"] = sig.make<TH1D>("chi_mass_Z", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi_mass_cnt"] = cnt.make<TH1D>("chi_mass_cnt", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi2_chi_cnt"] = cnt.make<TH1D>("chi2_chi_cnt", ";#chi^{2};;", 100, 0., 500.);
      h1_["3jets_cnt"] = cnt.make<TH1D>("3jets_cnt", "events w/ <4 jets", 2, .5, 2.5);
