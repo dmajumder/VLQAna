@@ -543,6 +543,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if ( goodBTaggedAK4Jets.size() > 0 ) { h1_["cutflow"] -> Fill(7, evtwt) ;}
   else return false;
 
+  if (zll.at(0).getPt() < 150) {}
+  else return false;
+
   // ST > 1000 GeV
   if ( ST > STMin_ ) h1_["cutflow"] -> Fill(8, evtwt) ;  
   else return false ; 
