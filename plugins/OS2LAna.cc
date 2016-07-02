@@ -914,6 +914,7 @@ void OS2LAna::beginJob() {
      h1_["chi2_chi_cnt"] = cnt.make<TH1D>("chi2_chi_cnt", ";#chi^{2};;", 100, 0., 500.);
      h1_["3jets_cnt"] = cnt.make<TH1D>("3jets_cnt", "events w/ <4 jets", 2, .5, 2.5);
      h1_["3jets"] = sig.make<TH1D>("3jets", "events w/ <4 jets", 2, .5, 2.5);
+     h1_["chi2_chi_H"] = sig.make<TH1D>("chi2_chi_H", ";#chi^{2};;", 100, 0., 500.);                                                                                                                                   h1_["sqrtChi2_H"] = sig.make<TH1D>("sqrtChi2_H", ";#chi;;", 100, 0., 500.);                                                                                                                                       h1_["chi2_mass_H"] = sig.make<TH1D>("chi_mass_H", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);   
      
      //electrons specific varaibles in EE and EB at preselection level
      if (zdecayMode_ == "zelel" && additionalPlots_){

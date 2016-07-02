@@ -192,7 +192,10 @@ pair<double, double> MassReco::doReco(vlq::JetCollection collection, double bosM
 }
 
 double MassReco::chi2(vector<TLorentzVector> jets, TLorentzVector Leptons, double bosMass, double mass){
-
+  if ( (jets[2] + jets[3]).Pt() < 150 ) 
+    return(99999);
+  else{
+  
 	double Zup = abs((jets[2] + jets[3]).M() - bosMass);
 	double Zup2 = Zup * Zup;
 	double term1 = Zup2 / (13.835*13.835);
@@ -208,6 +211,7 @@ double MassReco::chi2(vector<TLorentzVector> jets, TLorentzVector Leptons, doubl
 	double result = term1 + term2 + term3;
 
 	return(result);
+  }
 }
 
  double MassReco::chi2(vector<TLorentzVector> ak4Jets, TLorentzVector ak8Jet, TLorentzVector Leptons, double bosMass, double mass){
