@@ -53,22 +53,10 @@ for n_file in range (1, int(NFILE)+1):
 	line = line.replace('njob' ,	str(n_file) )
 #        line = line.replace('path_to_sample','file:'+str(PATH)+'/root_skim_file_'+str(n_file)+'.root')
 #	line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch/'+str(PATH)+'/B2GEDMNtuple_'+str(n_file)+'.root')
-        if SAMPLE == 'bprime800' or SAMPLE == 'tprime800':
-            if n_file < 1000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'0/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 2000 and n_file >= 1000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'1/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 3000 and n_file >= 2000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'2/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 4000 and n_file >= 3000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'3/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 5000 and n_file >= 4000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'4/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 6000 and n_file >= 5000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'5/B2GEDMNtuple_'+str(n_file)+'.root')
-            if n_file < 7000 and n_file >= 6000:
-                line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'6/B2GEDMNtuple_'+str(n_file)+'.root')
-#	line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'/B2GEDMNtuple_'+str(n_file)+'.root')
+        if 'bprime' in SAMPLE or SAMPLE == 'tprime':
+            line = line.replace('path_to_sample','root://eoscms.cern.ch/'+str(PATH)+'0/B2GEDMNtuple_'+str(n_file)+'.root')                                                                                        
+            #line = line.replace('CondOutputSkim', 'Skim_'+str(n_file)+'.root')                                                                                                                                    
+            #line = line.replace('CondOutputEvt', 'Evt_'+str(n_file)+'.root')  
         elif SAMPLE == "muons" :
             if n_file < 1000:
                 line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch/'+str(PATH)+'0/B2GEDMNtuple_'+str(n_file)+'.root')
@@ -101,7 +89,10 @@ for n_file in range (1, int(NFILE)+1):
                 line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch/'+str(PATH)+'5/B2GEDMNtuple_'+str(n_file)+'.root')
             if n_file < 7000 and n_file >= 6000:
                 line = line.replace('path_to_sample','root://cms-xrd-global.cern.ch/'+str(PATH)+'6/B2GEDMNtuple_'+str(n_file)+'.root')
-        line = line.replace('output',str(SAMPLE)+'_'+str(n_file)+'.root')
+        line = line.replace('CondOutputSkim', 'Skim_'+str(n_file)+'.root')                                                                                                                                    
+        line = line.replace('CondOutputEvt', 'Evt_'+str(n_file)+'.root')    
+        #if 'bprime' not in SAMPLE or 'ttbar' not in SAMPLE:
+         #   line = line.replace('output',str(SAMPLE)+'_'+str(n_file)+'.root')
         outputfile.writelines(line)
     inputfile.close()
     outputfile.close()

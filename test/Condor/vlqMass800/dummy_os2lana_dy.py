@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', True,
+options.register('doPUReweightingOfficial', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -33,27 +33,27 @@ options.register('filterSignal', False,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', 'EvtType_MC_bZbZ',
+options.register('signalType', '',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
     )
-options.register('applyLeptonSFs', True,
+options.register('applyLeptonSFs', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
-options.register('applyBTagSFs', True,
+options.register('applyBTagSFs', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply b-tagging SFs to the MC"
     )
-options.register('applyDYNLOCorr', True, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
+options.register('applyDYNLOCorr', False, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply DY EWK k-factor to DY MC"
     )
-options.register('FileNames', 'FileNames_QCD_HT1000to1500',
+options.register('FileNames', 'test',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Name of list of input files"
@@ -63,10 +63,15 @@ options.register('optimizeReco', False,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('applyZptCorr', True,
+options.register('applyHtCorr', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
+    )
+options.register('doSkim', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Produce skim 1 or 0"
     )
 
 options.setDefault('maxEvents', -1)
@@ -78,17 +83,15 @@ if options.zdecaymode == "zmumu":
   hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-      #"HLT_DoubleMu8_Mass8_PFHT300_v",
       ]
 elif options.zdecaymode == "zelel":
   hltpaths = [
       "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-      #"HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v"
       ]
 else:
   sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
-EWK = False
+
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
@@ -96,10 +99,10 @@ if options.isData:
   options.applyLeptonSFs = False
   applyZptCorr = False
 
-if options.filterSignal == True and len(options.signalType) == 0:
+if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
-process = cms.Process("OS2LAna")
+process = cms.Process("OS2LAna1")
 
 from inputFiles_cfi import * 
 
@@ -107,14 +110,16 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
       #FileNames[options.FileNames]
-'path_to_sample',
-
+    'path_to_sample'
     ) 
     )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
+
+## Output Report
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
 process.evtcleaner.isData = options.isData 
@@ -133,26 +138,39 @@ process.ana = ana.clone(
     applyBTagSFs = cms.bool(options.applyBTagSFs),
     applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
     optimizeReco = cms.bool(options.optimizeReco),
-    applyZptCorr = cms.bool(options.applyZptCorr),
+    applyHtCorr = cms.bool(options.applyHtCorr),
+    doSkim       = cms.bool(options.doSkim),
     )
 process.ana.elselParams.elidtype = cms.string(options.lepID)
 process.ana.muselParams.muidtype = cms.string(options.lepID)
 process.ana.muselParams.muIsoMax = cms.double(0.15)
 process.ana.lepsfsParams.lepidtype = cms.string(options.lepID)
 process.ana.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
-process.ana.BoostedZCandParams.ptMin = cms.double(80.)
+#process.ana.BoostedZCandParams.ptMin = cms.double(150.)#not used in analysis
 process.ana.jetAK8selParams.jetPtMin = cms.double(200) 
 process.ana.jetAK4BTaggedselParams.jetPtMin = cms.double(50) 
 process.ana.STMin = cms.double(1000.)
-process.ana.vlqMass = cms.double(800.) #M=1000
+process.ana.vlqMass = cms.double(1000.) #M=1000
 process.ana.bosonMass = cms.double(91.2) #Z
-process.ana.doEWKcorr = cms.bool(EWK)
 
 process.TFileService = cms.Service("TFileService",
        fileName = cms.string(
-         'output'
+         'CondOutputEvt'
          )
        )
+
+outCommand = ['keep *', 'drop *_evtcleaner_*_*', 'drop *_photons_*_*', 'drop *_photonjets_*_*', 'drop *_*Puppi_*_*', 'drop *_TriggerResults_*_*']
+if options.isData:
+  outCommand.append('drop *_TriggerUserData_triggerNameTree_*')
+  outCommand.append('drop *_TriggerUserData_triggerPrescaleTree_*')
+  outCommand.append('drop *_METUserData_triggerNameTree_*')
+
+process.out = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string('CondOutputSkim'),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('p')),
+    dropMetaData = cms.untracked.string('DROPPED'),#'type_label_instance_process'
+    outputCommands = cms.untracked.vstring(outCommand )
+    )
 
 ## Event counters
 from Analysis.EventCounter.eventcounter_cfi import eventCounter
@@ -160,16 +178,16 @@ process.allEvents = eventCounter.clone(isData=options.isData)
 process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
-process.load("Analysis.VLQAna.VLQCandProducer_cff")
 
 process.p = cms.Path(
-    process.allEvents
-    *process.evtcleaner
-    *process.cleanedEvents
-    *cms.ignore(process.ana)
-    * process.finalEvents
-    )
+  process.allEvents
+  *process.evtcleaner
+  #*process.cleanedEvents
+  *cms.ignore(process.ana)
+  #* process.finalEvents
+  )
 
-#process.schedule = cms.Schedule(process.p)
+if options.doSkim:
+  process.outpath = cms.EndPath(process.out)
 
 #open('dump.py','w').write(process.dumpPython())

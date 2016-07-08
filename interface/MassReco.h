@@ -21,10 +21,11 @@ public:
 	TLorentzVector getMatchedJet(TLorentzVector, vlq::JetCollection, double) ;
 	double findInvMass(TLorentzVector, TLorentzVector) ;
 	double findInvMass(TLorentzVector, TLorentzVector, TLorentzVector) ;
-	pair<double, double> doReco(vlq::JetCollection, double, TLorentzVector) ;
-	pair<double, double> doReco(vlq::JetCollection, TLorentzVector, double, TLorentzVector);
-	double chi2(vector<TLorentzVector>, TLorentzVector, double, double) ;
-	double chi2(vector<TLorentzVector>, TLorentzVector, TLorentzVector, double, double);
+	pair<double, double> doReco(vlq::JetCollection, double, TLorentzVector, double) ;
+	pair<double, double> doReco(vlq::JetCollection, TLorentzVector, double, TLorentzVector, double);
+	double chi2(vector<TLorentzVector>, TLorentzVector, double, double, double) ;
+	double chi2(vector<TLorentzVector>, TLorentzVector, TLorentzVector, double, double, double);
 	pair<double, double> vector_eval(vector<pair<double, double> >) ;
+
 };
 #endif
