@@ -202,6 +202,8 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   unsigned int hltdecisions(0) ; 
   for ( const string& myhltpath : hltPaths_ ) {
+    if (hltPaths_.empty())
+	break;
     vector<string>::const_iterator it ;
     for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
       if ( it->find(myhltpath) < std::string::npos) {
@@ -216,8 +218,10 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   ////if ( cleanEvents_ && hltdecision==false ) return false ; 
 
   if ( isData_ ) {
-    bool metfilterdecision(1) ; 
+    bool metfilterdecision(1) ;
     for ( const string& metfilter : metFilters_ ) {
+      if (metFilters_.empty())
+	break;
       vector<string>::const_iterator it ; 
       for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
         if ( it->find(metfilter) < std::string::npos) {
