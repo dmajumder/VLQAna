@@ -176,6 +176,8 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
 
   if ((h_jetPt.product())->size() < 1) return ; 
 
+  //cout << jecShift_ << " " << jerShift_ << endl;
+
   const int npv(*h_npv) ; 
   const double rho(*h_rho) ; 
 

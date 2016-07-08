@@ -102,10 +102,10 @@ class OS2LAna : public edm::EDFilter {
     const bool doSkim_                           ;
     const bool sys_                                 ;
   const bool short_                           ;
-    double btagsf_bcUp_ ;
-    double btagsf_bcDown_;
-    double btagsf_lUp_;
-    double btagsf_lDown_;
+    bool btagsf_bcUp_ ;
+    bool btagsf_bcDown_;
+    bool btagsf_lUp_;
+    bool btagsf_lDown_;
     const bool PileupUp_ ;
     const bool PileupDown_ ;
     const double vlqMass_                        ;
@@ -114,6 +114,8 @@ class OS2LAna : public edm::EDFilter {
     const bool applyBTagSFs_                     ;
     const bool applyHtCorr_                     ;
     const bool applyDYNLOCorr_                   ;
+  const double jecShift_ ;
+  const double jerShift_ ;
     const std::string fname_DYNLOCorr_           ; 
     const std::string funname_DYNLOCorr_         ; 
     ApplyLeptonSFs lepsfs                        ;
@@ -186,10 +188,10 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   doSkim_                 (iConfig.getParameter<bool>              ("doSkim")),
   sys_                        (iConfig.getParameter<bool>            ("sys")),
   short_                      (iConfig.getParameter<bool>           ("short")),
-  btagsf_bcUp_         (iConfig.getParameter<double>        ("btagsf_bcUp")),
-  btagsf_bcDown_         (iConfig.getParameter<double>        ("btagsf_bcDown")),
-  btagsf_lUp_         (iConfig.getParameter<double>        ("btagsf_lUp")),
-  btagsf_lDown_         (iConfig.getParameter<double>        ("btagsf_lDown")),
+  btagsf_bcUp_         (iConfig.getParameter<bool>        ("btagsf_bcUp")),
+  btagsf_bcDown_         (iConfig.getParameter<bool>        ("btagsf_bcDown")),
+  btagsf_lUp_         (iConfig.getParameter<bool>        ("btagsf_lUp")),
+  btagsf_lDown_         (iConfig.getParameter<bool>        ("btagsf_lDown")),
   PileupUp_               (iConfig.getParameter<bool>             ("PileupUp")),
   PileupDown_          (iConfig.getParameter<bool>             ("PileupDown")),
   vlqMass_                (iConfig.getParameter<double>            ("vlqMass")),
@@ -198,6 +200,8 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   applyBTagSFs_           (iConfig.getParameter<bool>              ("applyBTagSFs")), 
   applyHtCorr_            (iConfig.getParameter<bool>              ("applyHtCorr")),
   applyDYNLOCorr_         (iConfig.getParameter<bool>              ("applyDYNLOCorr")), 
+  jecShift_  (iConfig.getParameter<double>  ("jecShift")),
+  jerShift_  (iConfig.getParameter<double> ("jerShift")),
   fname_DYNLOCorr_        (iConfig.getParameter<std::string>       ("File_DYNLOCorr")),
   funname_DYNLOCorr_      (iConfig.getParameter<std::string>       ("Fun_DYNLOCorr")),
   lepsfs                  (iConfig.getParameter<edm::ParameterSet> ("lepsfsParams")),
@@ -260,6 +264,9 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   if ( !hltdecision ) return false;
 
   //double evtwtgen(*h_evtwtGen.product());
+
+  cout << *h_evtwtPVHigh.product() << " " << *h_evtwtPVLow.product() << " " << *h_evtwtPV.product() << endl;
+
   double evtwt;
   if (PileupUp_)
     evtwt = (*h_evtwtGen.product()) * (*h_evtwtPVHigh.product()) ; 
@@ -268,7 +275,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else
     evtwt = (*h_evtwtGen.product()) * (*h_evtwtPV.product()) ;
 
-  vlq::MuonCollection goodMuons; 
+   vlq::MuonCollection goodMuons; 
   muonmaker(evt, goodMuons) ; 
 
   vlq::ElectronCollection goodElectrons; 
@@ -424,10 +431,20 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   else if (zdecayMode_ == "zelel") {cleanjets(goodBTaggedAK4Jets, goodElectrons); }  
   //get b-tag SFs 
   double btagsf(1) ;
-  // double btagsf_bcUp(1) ; 
-  // double btagsf_bcDown(1) ; 
-  // double btagsf_lUp(1) ; 
-  // double btagsf_lDown(1) ; 
+  double btagsf_bcUp(1) ; 
+  double btagsf_bcDown(1) ; 
+  double btagsf_lUp(1) ; 
+  double btagsf_lDown(1) ;
+  if (btagsf_bcUp_)
+    btagsf_bcUp = 2;
+  if (btagsf_bcDown_)
+    btagsf_bcDown = 0;
+  if (btagsf_lUp_)
+    btagsf_lUp = 2;
+  if (btagsf_lDown_)
+    btagsf_lDown = 0;
+
+  //cout << btagsf << " " << btagsf_bcUp << " " << btagsf_bcDown << " " << btagsf_lUp << " " << btagsf_lDown << endl;
 
   if ( applyBTagSFs_ && *h_evttype.product() != "EvtType_Data") {
      std::vector<double>csvs;
@@ -442,7 +459,17 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
         flhads.push_back(jet.getHadronFlavour()) ; 
      }
      
-     btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4BTaggedmaker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp_, btagsf_bcDown_, btagsf_lUp_, btagsf_lDown_) ; 
+     btagsfutils_->getBTagSFs (csvs, pts, etas, flhads, jetAK4BTaggedmaker.idxjetCSVDiscMin_, btagsf, btagsf_bcUp, btagsf_bcDown, btagsf_lUp, btagsf_lDown) ; 
+
+  if (btagsf_bcUp_)
+    evtwt *= btagsf_bcUp;
+  else if (btagsf_bcDown_)
+    evtwt *= btagsf_bcDown;
+  else  if (btagsf_lUp_)
+    evtwt *= btagsf_lUp;
+  else if (btagsf_lDown_)
+    evtwt *= btagsf_lDown;
+  else
      evtwt *= btagsf;
   }
   MassReco reco;

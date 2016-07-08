@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 from array import array
-from ROOT import TH1D,TH2D,TFile,TMath,TCanvas,THStack,TLegend,TPave,TLine,TLatex, TF1
+from ROOT import TH1D,TH2D,TFile,TMath,TCanvas,THStack,TLegend,TPave,TLine,TLatex, TF1, TGraph, TMultiGraph
 from ROOT import gROOT,gStyle,gPad,gStyle
 from ROOT import Double,kBlue,kRed,kOrange,kMagenta,kYellow,kCyan,kGreen,kGray,kBlack,kTRUE
 
@@ -31,12 +31,12 @@ parser.add_option('--plotDir', metavar='P', type='string', action='store',
                   help='output directory of plots')
 
 parser.add_option('--skimType', metavar='S', type='string', action='store',
-                  default='CR_Zelel',
+                  default='CR_Zmumu',
                   dest='skimType',
                   help='Skim type: CR_Zelel, CR_Zmumu, SR_Zelel, SR_Zmumu')
 
 parser.add_option('--processDir', metavar='pD', type='string', action='store',
-                  default='ana/cnt',
+                  default='ana/sig',
                   dest='processDir',
                   help='directory to read histograms from')
 
@@ -59,6 +59,12 @@ parser.add_option('--rebin', metavar='T', type='int', action='store',
                   default='1',
                   dest='rebin',
                   help='rebin the histograms')
+
+parser.add_option('--drawEff', action='store_true', 
+                  default=False,
+                  dest='drawEff',
+                  help='draw eff and sig'
+)
 
 (options,args) = parser.parse_args()
 # ==========end: options =============
@@ -135,25 +141,25 @@ vv       = [
             [f_ZZTo4L,     ZZTo4L_xs,      ZZTo4L_num, lumi],
            ]
 
-tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
-#tZbW_800 = [[f_TpTp_tZbW_800, TpTp800_xs,         TpTp800_num,       lumi]]
-tZtH_800 = [[f_TpTp_tZtH_800, TpTp800_xs,         TpTp800_num,       lumi]]
-#tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-#tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
-#tZbW_1200 = [[f_TpTp_tZbW_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
-tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+# tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
+# #tZbW_800 = [[f_TpTp_tZbW_800, TpTp800_xs,         TpTp800_num,       lumi]]
+# #tZtH_800 = [[f_TpTp_tZtH_800, TpTp800_xs,         TpTp800_num,       lumi]]
+# tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+# #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+# #tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+# tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+# #tZbW_1200 = [[f_TpTp_tZbW_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+# #tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 
 bZbZ_800 = [[f_BpBp_bZbZ_800, BpBp800_xs,         BpBp800_num,       lumi]]
 #bZtW_800 = [[f_BpBp_bZtW_800, BpBp800_xs,         BpBp800_num,       lumi]]
-bZbH_800 = [[f_BpBp_bZbH_800, BpBp800_xs,         BpBp800_num,       lumi]]
-bZbH_1000 = [[f_BpBp_bZbH_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]
+#bZbH_800 = [[f_BpBp_bZbH_800, BpBp800_xs,         BpBp800_num,       lumi]]
+#bZbH_1000 = [[f_BpBp_bZbH_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]
 bZbZ_1000 = [[f_BpBp_bZbZ_1000, BpBp1000_xs,         BpBp1000_num,       lumi]]                                                                                               
 #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]                                                                                               
 bZbZ_1200 = [[f_BpBp_bZbZ_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
 #bZtW_1200 = [[f_BpBp_bZtW_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
-bZbH_1200 = [[f_BpBp_bZbH_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
+#bZbH_1200 = [[f_BpBp_bZbH_1200, BpBp1200_xs,         BpBp1200_num,       lumi]]
 
 
 h_data     = getHisto(dataLabel,       dataLeg,        pDir, var,  data,     kBlack,     verbose)
@@ -163,26 +169,26 @@ h_dy       = getHisto(dyLabel,         dyLeg,          pDir, var,  dy,       90,
 #h_st       = getHisto(sTLabel,         sTLeg,          pDir, var,  st,       kCyan,      verbose)
 h_vv       = getHisto(vvLabel,         vvLeg,          pDir, var,  vv,       kBlue,       verbose)
 # h_tZtZ_800 = getHisto('TT_tZtZ_M800_', 'TT_tZtZ_M800', pDir, var,  tZtZ_800, kGreen+4,    verbose)
-# #h_tZbW_800 = getHisto('TT_tZbW_M800_', 'TT_tZbW_M800', pDir, var,  tZbW_800, kGreen+3,  verbose)
-# h_tZtH_800 = getHisto('TT_tZtH_M800_', 'TT_tZtH_M800', pDir, var,  tZtH_800, kGreen+2, verbose)
+# # #h_tZbW_800 = getHisto('TT_tZbW_M800_', 'TT_tZbW_M800', pDir, var,  tZbW_800, kGreen+3,  verbose)
+# # h_tZtH_800 = getHisto('TT_tZtH_M800_', 'TT_tZtH_M800', pDir, var,  tZtH_800, kGreen+2, verbose)
 
-# #h_tZtZ_1000 = getHisto('TT_tZtZ_M1000_', 'TT_tZtZ_M1000', pDir, var, tZtZ_1000, kYellow+2, verbose)
-# #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-# #h_tZtH_1000 =getHisto('TT_tZtH_M1000_', 'TT_tZtH_M1000', pDir, var, tZtH_1000, kYellow+4, verbose)
+# h_tZtZ_1000 = getHisto('TT_tZtZ_M1000_', 'TT_tZtZ_M1000', pDir, var, tZtZ_1000, kYellow+2, verbose)
+# # #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+# # #h_tZtH_1000 =getHisto('TT_tZtH_M1000_', 'TT_tZtH_M1000', pDir, var, tZtH_1000, kYellow+4, verbose)
 
 # h_tZtZ_1200 = getHisto('TT_tZtZ_M1200_', 'TT_tZtZ_M1200', pDir, var,  tZtZ_1200, kBlue+4,    verbose)
-# #h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
-# h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
+# # #h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
+# # h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
 
 h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kCyan,    verbose)
 #h_bZtW_800 = getHisto('BB_bZtW_M800_', 'BB_bZtW_M800', pDir, var,  bZtW_800, kRed+3,  verbose)
-h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed, verbose)
-#h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan+2,    verbose)
+#h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed, verbose)
+h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan+2,    verbose)
 #h_bZtW_1000 = getHisto('BB_bZtW_M1000_', 'BB_bZtW_M1000', pDir, var,  bZtW_1000, kOrange+11,    verbose)
 #h_bZbH_1000 = getHisto('BB_bZbH_M1000_', 'BB_bZbH_M1000', pDir, var,  bZbH_1000, kRed+2,    verbose)
 h_bZbZ_1200 = getHisto('BB_bZbZ_M1200_', 'BB_bZbZ_M1200', pDir, var,  bZbZ_1200, kCyan+4,    verbose)
 #h_bZtW_1200 = getHisto('BB_bZtW_M1200_', 'BB_bZtW_M1200', pDir, var,  bZtW_1200, kMagenta+3,    verbose)
-h_bZbH_1200 = getHisto('BB_bZbH_M1200_', 'BB_bZbH_M1200', pDir, var,  bZbH_1200, kRed+4,    verbose)
+#h_bZbH_1200 = getHisto('BB_bZbH_M1200_', 'BB_bZbH_M1200', pDir, var,  bZbH_1200, kRed+4,    verbose)
 
 print 'before append'
 templates = []
@@ -192,23 +198,23 @@ templates.append(h_vv)
 #templates.append(h_st)
 #templates.append(h_wjets)
 # templates.append(h_tZtZ_800)
-# #templates.append(h_tZbW_800)
-# templates.append(h_tZtH_800)
-# #templates.append(h_tZtZ_1000)
-# # #templates.append(h_tZbW_1000)
-# #templates.append(h_tZtH_1000)
+# # #templates.append(h_tZbW_800)
+# # templates.append(h_tZtH_800)
+# templates.append(h_tZtZ_1000)
+# # # #templates.append(h_tZbW_1000)
+#  #templates.append(h_tZtH_1000)
 # templates.append(h_tZtZ_1200)
-# #templates.append(h_tZbW_1200)
-# templates.append(h_tZtH_1200)
+# # #templates.append(h_tZbW_1200)
+# # templates.append(h_tZtH_1200)
 templates.append(h_bZbZ_800)
 #templates.append(h_bZtW_800)
-templates.append(h_bZbH_800)
-#templates.append(h_bZbZ_1000)
+#templates.append(h_bZbH_800)
+templates.append(h_bZbZ_1000)
 # #templates.append(h_bZtW_1000)
 #templates.append(h_bZbH_1000)
 templates.append(h_bZbZ_1200)
 #templates.append(h_bZtW_1200)
-templates.append(h_bZbH_1200)
+#templates.append(h_bZbH_1200)
 print 'before file'
 
 # f = TFile(plotDir+"/"+skimType+"/"+var+".root", "RECREATE")
@@ -352,14 +358,14 @@ pad.SetTickx(1)
 pad.SetTicky(1)
 c1.cd(1)
 
-#t = c1.GetTopMargin()
+t = c1.GetTopMargin()
 
-# if h_data.GetMaximum() > hs.GetMaximum():
-#     hs.SetMaximum(h_data.GetMaximum())
-# else:
-#     h_data.SetMaximum(hs.GetMaximum())
+if h_data.GetMaximum() > hs.GetMaximum():
+    hs.SetMaximum(h_data.GetMaximum())
+else:
+    h_data.SetMaximum(hs.GetMaximum())
 
-#hs.SetMaximum(hs.GetMaximum()*5)
+hs.SetMaximum(hs.GetMaximum()*5)
 hs.SetMinimum(0.1)
 gPad.SetLogy()
 if var == 'cutflow':
@@ -368,9 +374,9 @@ if var == 'cutflow':
     for a in range(0, 1):
         h_data.SetBinContent(data_nbins-a, -1)
 
-h_data.GetXaxis().SetRangeUser(0, 400)
-hs.Draw()
-hs.GetXaxis().SetRangeUser(0, 400)
+#h_data.GetXaxis().SetRangeUser(0, 400)
+#hs.Draw()
+#hs.GetXaxis().SetRangeUser(0, 400)
 hs.Draw("Hist")
 h_bkg.Draw("e2 same")
 h_data.Draw("same")
@@ -448,6 +454,9 @@ if not os.path.isdir(plotDir):
 if not os.path.isdir(plotDir+"/"+skimType):
     subprocess.call( [m_2], shell=True )    
     
-c1.SaveAs(plotDir+"/"+skimType+"/"+var+"_.png")
-c1.SaveAs(plotDir+"/"+skimType+"/"+var+"_.pdf")
+if options.drawEff:
+    execfile("drawEff.py")
+else:
+    c1.SaveAs(plotDir+"/"+skimType+"/"+var+"_.png")
+    c1.SaveAs(plotDir+"/"+skimType+"/"+var+"_.pdf")
 #raw_input("hold on")

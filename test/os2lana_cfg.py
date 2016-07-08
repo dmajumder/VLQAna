@@ -23,7 +23,7 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', False,
+options.register('doPUReweightingOfficial', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
@@ -78,13 +78,13 @@ options.register('sys', True,
     VarParsing.varType.bool,
     "Do systematics"
 )
-options.register('short', False,
+options.register('short', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "only signal"
 )
 
-options.setDefault('maxEvents', 100000)
+options.setDefault('maxEvents', 2000)
 options.parseArguments()
 print options
 
@@ -132,7 +132,7 @@ process.source = cms.Source(
     )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = -1
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 
 ## Output Report
@@ -176,36 +176,40 @@ process.ana.recoPt = cms.double(150.)
 if options.sys:
   process.anabcUp = process.ana.clone(
     sys = cms.bool(True),
-    btagsf_bcUp = cms.double(2),
+    btagsf_bcUp = cms.bool(True),
     )
   process.anabcDown = process.ana.clone(
     sys = cms.bool(True),
-    btagsf_bcDown = cms.double(2),
+    btagsf_bcDown = cms.bool(True),
     )
   process.analightUp = process.ana.clone(
     sys = cms.bool(True),
-   btagsf_lUp = cms.double(2),
+   btagsf_lUp = cms.bool(True),
     )
   process.analightDown = process.ana.clone(
     sys = cms.bool(True),
-    btagsf_lDown = cms.double(2),
+    btagsf_lDown = cms.bool(True),
     )
   process.anaJecUp = process.ana.clone(
     sys = cms.bool(True),
-    jecShift = cms.double(1),
+    #jecShift = cms.double(1),
     )
+  process.anaJecUp.jetAK4selParams.jecShift = cms.double(1.)
   process.anaJecDown = process.ana.clone(
     sys = cms.bool(True),
-    jecShift = cms.double(-1),
+    #jecShift = cms.double(-1),
     )
+  process.anaJecDown.jetAK4selParams.jecShift = cms.double(-1.)
   process.anaJerUp = process.ana.clone(
     sys = cms.bool(True),
-    jerShift = cms.double(2),
+    #jerShift = cms.double(2),
     )
+  process.anaJerUp.jetAK4selParams.jerShift = cms.int32(2)
   process.anaJerDown = process.ana.clone(
     sys = cms.bool(True),
-    jerShift = cms.double(0),
+    #jerShift = cms.double(0),
     )
+  process.anaJerDown.jetAK4selParams.jerShift = cms.int32(0)
   process.anaPileupUp = process.ana.clone(
     sys = cms.bool(True),
     PileupUp = cms.bool(True),
