@@ -35,7 +35,8 @@ class EventCleaner : public edm::EDFilter {
     edm::LumiReWeighting LumiWeights_;
     edm::LumiReWeighting LumiWeightsLow_;
     edm::LumiReWeighting LumiWeightsHigh_;
-
+  
+    const bool doSkim_                                      ;
     edm::InputTag l_runno                                  ; 
     edm::InputTag l_lumisec                                ; 
     edm::InputTag l_evtno                                  ; 
@@ -86,10 +87,11 @@ class EventCleaner : public edm::EDFilter {
 };
 
 EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
+  doSkim_               (iConfig.getParameter<bool>            ("doSkim")),
   l_runno                 (iConfig.getParameter<edm::InputTag>            ("runnoLabel")),
   l_lumisec               (iConfig.getParameter<edm::InputTag>            ("lumisecLabel")),
   l_evtno                 (iConfig.getParameter<edm::InputTag>            ("evtnoLabel")),
-  l_trigName              (iConfig.getParameter<edm::InputTag>            ("trigNameLabel")),
+  l_trigName           (iConfig.getParameter<edm::InputTag>         ("trigNameLabel")),
   l_trigBit               (iConfig.getParameter<edm::InputTag>            ("trigBitLabel")),
   l_metFiltersName        (iConfig.getParameter<edm::InputTag>            ("metFiltersNameLabel")),
   l_metFiltersBit         (iConfig.getParameter<edm::InputTag>            ("metFiltersBitLabel")),
@@ -186,9 +188,13 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<unsigned int> h_runno    ; evt.getByLabel (l_runno                  , h_runno                );
   Handle<unsigned int> h_lumisec  ; evt.getByLabel (l_lumisec                , h_lumisec              );
   Handle<ULong64_t> h_evtno       ; evt.getByLabel (l_evtno                  , h_evtno                );
-  hstring h_trigName              ; evt.getByLabel (l_trigName               , h_trigName             );
+  hstring h_trigName              ;
+  hstring h_metFiltersName        ;
+  if (doSkim_){
+    evt.getByLabel (l_trigName               , h_trigName             );
+    evt.getByLabel (l_metFiltersName         , h_metFiltersName       );
+  }
   hfloat  h_trigBit               ; evt.getByLabel (l_trigBit                , h_trigBit              ); 
-  hstring h_metFiltersName        ; evt.getByLabel (l_metFiltersName         , h_metFiltersName       );
   hfloat  h_metFiltersBit         ; evt.getByLabel (l_metFiltersBit          , h_metFiltersBit        ); 
   hfloat  h_vtxRho                ; evt.getByLabel (l_vtxRho                 , h_vtxRho               );
   hfloat  h_vtxZ                  ; evt.getByLabel (l_vtxZ                   , h_vtxZ                 );
@@ -201,35 +207,37 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   const int evtno  ( (2*isData_ - 1) * (*h_evtno) )   ; //// If MC, -ve sign for evtno  
 
   unsigned int hltdecisions(0) ; 
-  for ( const string& myhltpath : hltPaths_ ) {
-    if (hltPaths_.empty())
-	break;
-    vector<string>::const_iterator it ;
-    for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
-      if ( it->find(myhltpath) < std::string::npos) {
-        hltdecisions |= int((h_trigBit.product())->at( it - (h_trigName.product())->begin() )) << ( it - (h_trigName.product())->begin() ) ;  
+  if (doSkim_){
+    for ( const string& myhltpath : hltPaths_ ) {
+      vector<string>::const_iterator it ;
+      for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
+	if ( it->find(myhltpath) < std::string::npos) {
+	  hltdecisions |= int((h_trigBit.product())->at( it - (h_trigName.product())->begin() )) << ( it - (h_trigName.product())->begin() ) ;  
+	}
       }
     }
   }
-  bool hltdecision(false) ; 
+   bool hltdecision(false) ; 
   if ( hltPaths_.size() > 0 && !hltdecisions) hltdecision=false;
   else hltdecision=true;
+  
+  if (!doSkim_) hltdecision=true;
 
   ////if ( cleanEvents_ && hltdecision==false ) return false ; 
 
   if ( isData_ ) {
     bool metfilterdecision(1) ;
-    for ( const string& metfilter : metFilters_ ) {
-      if (metFilters_.empty())
-	break;
-      vector<string>::const_iterator it ; 
-      for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
-        if ( it->find(metfilter) < std::string::npos) {
-          metfilterdecision *= (h_metFiltersBit.product())->at( it - (h_metFiltersName.product())->begin() ) ; 
-        }
+    if (doSkim_){
+      for ( const string& metfilter : metFilters_ ) {
+	vector<string>::const_iterator it ; 
+	for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
+	  if ( it->find(metfilter) < std::string::npos) {
+	    metfilterdecision *= (h_metFiltersBit.product())->at( it - (h_metFiltersName.product())->begin() ) ; 
+	  }
+	}
       }
+      if ( !metfilterdecision ) return false ; 
     }
-    if ( !metfilterdecision ) return false ; 
   }
 
   const int npv(*h_npv) ; 

@@ -76,7 +76,9 @@ class OS2LAna : public edm::EDFilter {
     void fillAdditionalPlots( vlq::ElectronCollection goodElectrons,double evtwt);
     double GetDYNLOCorr(const double dileppt); 
     double ZptCorr(vlq::Candidate, double, double);
-  double htCorr(double ht, double p0, double p1);
+    double htCorr(double ht, double p0, double p1);
+    bool solve_nu(const TLorentzVector &vlep, const TLorentzVector &vnu, double wmass, double& nuz1, double& nuz2);
+    void adjust_e_for_mass(TLorentzVector& v, double mass);
 
     // ----------member data ---------------------------
     edm::EDGetTokenT<string>   t_evttype         ;
@@ -265,7 +267,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
   //double evtwtgen(*h_evtwtGen.product());
 
-  cout << *h_evtwtPVHigh.product() << " " << *h_evtwtPVLow.product() << " " << *h_evtwtPV.product() << endl;
+  //  cout << *h_evtwtPVHigh.product() << " " << *h_evtwtPVLow.product() << " " << *h_evtwtPV.product() << endl;
 
   double evtwt;
   if (PileupUp_)
@@ -435,14 +437,14 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   double btagsf_bcDown(1) ; 
   double btagsf_lUp(1) ; 
   double btagsf_lDown(1) ;
-  if (btagsf_bcUp_)
-    btagsf_bcUp = 2;
-  if (btagsf_bcDown_)
-    btagsf_bcDown = 0;
-  if (btagsf_lUp_)
-    btagsf_lUp = 2;
-  if (btagsf_lDown_)
-    btagsf_lDown = 0;
+  // if (btagsf_bcUp_)
+  //   btagsf_bcUp = 2;
+  // if (btagsf_bcDown_)
+  //   btagsf_bcDown = 2;
+  // if (btagsf_lUp_)
+  //   btagsf_lUp = 2;
+  // if (btagsf_lDown_)
+  //   btagsf_lDown = 2;
 
   //cout << btagsf << " " << btagsf_bcUp << " " << btagsf_bcDown << " " << btagsf_lUp << " " << btagsf_lDown << endl;
 
@@ -774,10 +776,25 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      chi2_result_H.first  = -999;
      chi2_result_H.second = -999;
   }
+
+  TLorentzVector nu;
+  nu = goodMet.at(0).getP4();
+
+  double sol1 = 0, sol2 = 0;
+  bool IsMETpz = solve_nu(lep1, nu, 80.4, sol1, sol2);
+  if (IsMETpz){
+    nu.SetPz(sol1);
+    adjust_e_for_mass(nu, 0.);
+  }
+
+  h1_["semiLep"] -> Fill(goodBTaggedAK4Jets.at(0).getP4().M() + nu.M() + lep1.M(), evtwt);
+
+
  if (goodWTaggedJets.size() >0 && goodAK4Jets.size() > 1)
     chi2_result_Z_boost = reco.doReco(goodAK4Jets, goodWTaggedJets.at(0).getP4(), 91.2, Leptons, recoPt_);
   else if (goodHTaggedJets.size() > 0 && goodAK4Jets.size() > 1)
     chi2_result_H_boost = reco.doReco(goodAK4Jets, goodHTaggedJets.at(0).getP4(), 125., Leptons, recoPt_); 
+
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
   h1_["chi2_chi_Z"] ->Fill(chi2_result_Z.first, evtwt);
@@ -1008,6 +1025,7 @@ void OS2LAna::beginJob() {
      h1_["chi2_mass_Z_boost"] = sig.make<TH1D>("chi_mass_Z_boost", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi2_mass_H_com"] = sig.make<TH1D>("chi_mass_H_com", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi2_mass_Z_com"] = sig.make<TH1D>("chi_mass_Z_com", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
+     h1_["semiLep"] = sig.make<TH1D>("semiLep t", "M_{t} SemiLeptonic", 15, 0., 300.);
      
      //electrons specific varaibles in EE and EB at preselection level
      if (zdecayMode_ == "zelel" && additionalPlots_ && !short_){
@@ -1044,6 +1062,69 @@ double OS2LAna::ZptCorr(vlq::Candidate zll, double p0, double p1){
 
 double OS2LAna::htCorr(double ht, double p0, double p1){
   return(p1*ht + p0);
+}
+
+bool OS2LAna::solve_nu(const TLorentzVector &vlep, const TLorentzVector &vnu, double wmass, double& nuz1, double& nuz2){
+	//
+	// Purpose: Solve for the neutrino longitudinal z-momentum that makes
+	// the leptonic W have mass WMASS.
+	//
+	// Inputs:
+	// ev - The event to solve.
+	// wmass - The desired W mass.
+	//
+	// Outputs:
+	// nuz1 - First solution (smaller absolute value).
+	// nuz2 - Second solution.
+	//
+	// Returns:
+	// True if there was a real solution. False if there were only
+	// imaginary solutions. (In that case, we just set the imaginary
+	// part to zero.)
+	//
+	TLorentzVector tmp;
+	tmp = vlep;
+	bool discrim_flag = true;
+
+	//std::cout << "Before: " << vlep.Pt() << " " << vlep.Eta() << " " << vlep.Phi() << " " << vlep.M() << std::endl;
+
+
+	double x = vlep.X()*vnu.X() + vlep.Y()*vnu.Y() + wmass*wmass/2;
+	double a = vlep.Z()*vlep.Z() - vlep.E()*vlep.E();
+	double b = 2*x*vlep.Z();
+	double c = x*x - vnu.Perp2() * vlep.E()*vlep.E();
+	double d = b*b - 4*a*c;
+	if (d < 0){
+		d = 0;
+		discrim_flag = false;
+	}
+
+	nuz1 = (-b + sqrt(d))/2/a;
+	nuz2 = (-b - sqrt(d))/2/a;
+	if (abs(nuz1) > abs(nuz2))
+		swap (nuz1, nuz2);
+
+	//std::cout << "After: " << vlep.Pt() << " " << vlep.Eta() << " " << vlep.Phi() << " " << vlep.M() << std::endl;
+	if (tmp != vlep){
+		std::cout << "Before: " << tmp.Pt() << " " << tmp.Eta() << " " << tmp.Phi() << " " << tmp.M() << std::endl;
+		std::cout << "After: " << vlep.Pt() << " " << vlep.Eta() << " " << vlep.Phi() << " " << vlep.M() << std::endl;
+	}
+	return discrim_flag;
+}
+
+void OS2LAna::adjust_e_for_mass(TLorentzVector& v, double mass){
+	//
+	// Purpose: Adjust the energy component of V (leaving the 3-vector part
+	// unchanged) so that it has mass MASS.
+	//
+	// Inputs:
+	// v - The 4-vector to scale.
+	// mass - The desired mass of the 4-vector.
+	//
+	// Outputs:
+	// v - The scaled 4-vector.
+	//
+	v.SetE(sqrt(v.Vect().Mag2() + mass*mass));
 }
 
 void OS2LAna::endJob() {
