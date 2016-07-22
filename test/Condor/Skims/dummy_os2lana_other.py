@@ -88,7 +88,7 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if not options.doSkim:
+if options.doSkim:
   if options.zdecaymode == "zmumu":
     hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 

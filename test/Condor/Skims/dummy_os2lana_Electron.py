@@ -8,7 +8,7 @@ options.register('isData', True,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('zdecaymode', 'zmumu',
+options.register('zdecaymode', 'zelel',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
@@ -68,7 +68,7 @@ options.register('applyHtCorr', False,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
     )
-options.register('doSkim', False,
+options.register('doSkim', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Produce skim 1 or 0"
@@ -88,7 +88,7 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if options.doSkim:
+if not options.doSkim:
   if options.zdecaymode == "zmumu":
     hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -113,7 +113,7 @@ if options.isData:
 if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
-process = cms.Process("OS2LAna1")
+process = cms.Process("OS2LAna")
 
 from inputFiles_cfi import * 
 

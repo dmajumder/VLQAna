@@ -23,7 +23,7 @@ python fnal_fileParser.py SAMPLE=ZZto2 ENTRY=226 NFILE=226 PATH=/store/user/jkar
  python fnal_fileParser.py SAMPLE=WZto2 ENTRY=700 NFILE=700 PATH=/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_105808/000
  python fnal_fileParser.py SAMPLE=WZto3 ENTRY=46 NFILE=46 PATH=/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_105652/000 
 
- python fnal_fileParser.py SAMPLE=muons ENTRY=6641 NFILE=6641 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleMuon/B2GAnaFW_76X_V1p2/160406_175248/000
+python fnal_fileParser.py SAMPLE=muons ENTRY=6641 NFILE=6641 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleMuon/B2GAnaFW_76X_V1p2/160406_175248/000
 #python fnal_fileParser.py SAMPLE=electrons ENTRY=6639 NFILE=6639 PATH=/store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_175235/000
 
 

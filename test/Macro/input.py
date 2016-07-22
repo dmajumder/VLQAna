@@ -3,14 +3,17 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/checkReco/'
+path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/withSystematics/muons/'
 pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
 
 ch = 'CR_Zmumu'
 
 #f_Data_Oct2015 = TFile(path+'')
-f_Data_PromptReco = TFile(path+'muons.root')
+if ch == 'CR_Zelel':
+    f_Data_PromptReco = TFile(path+'electrons.root')
+else:
+    f_Data_PromptReco = TFile(path+'muons.root')
 #f_Data_PromptReco = TFile(path+'Data.root')
 
 f_DY100to200 = TFile(path+'dy_ht100-200.root')
@@ -41,25 +44,25 @@ f_ZZTo4L            = TFile(path+'ZZto4.root')
 
 f_ttbar         = TFile(path+'ttbar.root')
 
-# f_TpTp_tZtZ_800 = TFile(path+'tZtZ800.root')
+f_TpTp_tZtZ_800 = TFile(path+'tprime800.root')
 # #f_TpTp_tZbW_800 = TFile(path+'TpTp_tZbW_M-800.root')
 # f_TpTp_tZtH_800 = TFile(path+'tZtH800.root')
-# f_TpTp_tZtZ_1000 = TFile(path+'tZtZ1000.root')
+f_TpTp_tZtZ_1000 = TFile(path+'tprime1000.root')
 # #f_TpTp_tZbW_1000 = TFile(path+'TpTp_tZbW_M-1000.root')
 # f_TpTp_tZtH_1000 = TFile(path+'tZtH1000.root')
-# f_TpTp_tZtZ_1200 = TFile(path+'tZtZ1200.root')
+f_TpTp_tZtZ_1200 = TFile(path+'tprime1200.root')
 # #f_TpTp_tZbW_1200 = TFile(path+'TpTp_tZbW_M-1200.root')
 # f_TpTp_tZtH_1200 = TFile(path+'tZtH1200.root')
 
-f_BpBp_bZbZ_800 = TFile(path+'bZbZ800Cut.root')
+f_BpBp_bZbZ_800 = TFile(path+'bprime800.root')
 #f_BpBp_bZtW_800 = TFile(path+'BpBp_bZtW_M-800.root')
 #f_BpBp_bZbH_800 = TFile(path+'bZbH800.root')
 
-f_BpBp_bZbZ_1000 = TFile(path+'bZbZ1000.root')
+f_BpBp_bZbZ_1000 = TFile(path+'bprime1000.root')
 #f_BpBp_bZbH_1000 = TFile(path+'bZbH1000.root')
 
 
-f_BpBp_bZbZ_1200 = TFile(path+'bZbZ1200.root')
+f_BpBp_bZbZ_1200 = TFile(path+'bprime1200.root')
 #f_BpBp_bZtW_1200 = TFile(path+'BpBp_bZtW_M-1200.root')
 #f_BpBp_bZbH_1200 = TFile(path+'bZbH1200.root')
 
@@ -100,9 +103,9 @@ BpBp1200_xs       = 0.0118  *gSF
 BpBp800_xs = 1.
 BpBp1000_xs = 1.
 BpBp1200_xs = 1.
-# TpTp800_xs= 1.
-# TpTp1000_xs = 1.
-# TpTp1200_xs = 1.
+TpTp800_xs= 1.
+TpTp1000_xs = 1.
+TpTp1200_xs = 1.
 
 #===== Number of generated events ======
 
@@ -251,7 +254,7 @@ def getHisto( label, leg, dir, var, Samples, color, verbose) :
         #     xs = 0
         #     hist.SetMarkerColorAlpha(color, 100)
         hist.Scale( xs * lumi /nevt)
-        hist.Rebin(4)
+#        hist.Rebin(4)
         histos.append( hist )
         
     histo = histos[0]

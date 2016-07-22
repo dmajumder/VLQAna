@@ -2,27 +2,10 @@
 
 import subprocess
 
-suffix = '_cnt'
-
+suffix = '_pre'
+channel = 'mu'
 options = [
 
-     # ['nob_ht'],
-     # ['b_st'],
-     # ['nob_st'],
-# #    ['pt_zc_pre'],
-# #    ['pt_zb_pre'],
-# #    ['pt_zlight_pre'],
-    # ['nob_pt_zmumu'],
-#      #['nob_pt_zelel_cnt'],
-#     # ['pt_zmumu_pre'],
-#     # ['pt_zelel_pre'],
-#     # ['pt_zmumu_cnt'],
-#     # ['pt_zelel_cnt'],
-#     # ['pt_zmumu'],
-#     # ['pt_zelel'],
-#     # ['st_pre'],
-#     # ['st_cnt'],
-#     # ['st'],
            #['cutflow'],
            ['npv_noweight'+suffix],
            ['npv'+suffix],
@@ -34,24 +17,22 @@ options = [
            ['ptak4jet1'+suffix],
            ['ptak4jet2'+suffix],
            ['ptak4jet3'+suffix],
-           ['ptak4jet4'+suffix],
            ['etaak4jet1'+suffix],
            ['etaak4jet2'+suffix],
            ['etaak4jet3'+suffix],
-           ['etaak4jet4'+suffix],
            # ['cvsak4jet1'+suffix],
            # ['cvsak4jet2'+suffix],
            # ['cvsak4jet3'+suffix],
-    #        ['cvsak4jet4'+suffix],
            ['phi_jet1MET'+suffix],
-           ['mass_zelel'+suffix],
-           ['dr_elel'+suffix],
-            ['pt_zelel'+suffix],
-           ['pt_el1'+suffix],
-           ['pt_el2'+suffix],
-    ['mht'+suffix],
-#    ['mhtMET'+suffix],
-#     #['pt_zelel'+suffix],
+           ['mass_z'+channel+channel+suffix],
+           ['dr_z'+channel+channel+suffix],
+            ['pt_z'+channel+channel+suffix],
+           ['pt_'+channel+'1'+suffix],
+           ['pt_'+channel+'2'+suffix],
+           ['mht'+suffix],
+           ['chi_mass_Z'],
+           ['chi_mass_H'],
+#            #  ['mhtMET'+suffix],
 #            # ['nbjets'],
 #            # ['nwjet'],
 #            # ['nhjet'],
@@ -86,13 +67,12 @@ options = [
 #              # ['ZJetMasslep'],
               #  ['chi2_chi'],
 #              # ['sqrtChi2'],
-               ['chi_mass'],
-      ['chi_mass_cnt'],
+               ['chi_mass_cnt'],
      # ['3jets_cnt'],
      # ['3jets'],
     ]
 
-command = "python plot.py --var={0:s} --plotDir='forPres_el'"
+command = "python plot.py --var={0:s} --plotDir='newSystematics'"
 
 for option in options :
     s = command.format(

@@ -40,8 +40,10 @@ for n_file in range (1, int(NFILE)+1):
         inputfile = open('dummy_os2lana_Electron.py')
     if 'dy' in SAMPLE:
         inputfile = open('dummy_os2lana_dy.py')
-    if 'tprime' in SAMPLE or 'bprime' in SAMPLE:
-        inputfile = open('dummy_os2lana_sig.py')
+    if 'tprime' in SAMPLE:
+        inputfile = open('dummy_os2lana_T.py')
+    if 'bprime' in SAMPLE:
+        inputfile = open('dummy_os2lana_B.py')
     if 'WW' in SAMPLE  or 'WZ' in SAMPLE or 'ZZ' in SAMPLE or 'ttbar' in SAMPLE:
         inputfile = open('dummy_os2lana_other.py')
 

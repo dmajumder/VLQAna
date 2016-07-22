@@ -794,6 +794,10 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
     chi2_result_Z_boost = reco.doReco(goodAK4Jets, goodWTaggedJets.at(0).getP4(), 91.2, Leptons, recoPt_);
   else if (goodHTaggedJets.size() > 0 && goodAK4Jets.size() > 1)
     chi2_result_H_boost = reco.doReco(goodAK4Jets, goodHTaggedJets.at(0).getP4(), 125., Leptons, recoPt_); 
+ if (goodWTaggedJets.size() > 0)
+   h1_["WTaggedMass"]->Fill(goodWTaggedJets.at(0).getP4().M(), evtwt);
+ else if (goodHTaggedJets.size() > 0)
+   h1_["HTaggedMass"]->Fill(goodHTaggedJets.at(0).getP4().M(), evtwt);
 
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
@@ -1010,6 +1014,10 @@ void OS2LAna::beginJob() {
         h1_["hadBJetMass"] = sig.make<TH1D>("BJetMass", ";JetM (Hadronic B quark) [GeV];;", 100, 500., 1500.);
         h1_["lepBJetMass"] = sig.make<TH1D>("BJetMasslep", ";M (B Jet Leptonic);;", 100, 500., 1500.);
      }
+
+     h1_["WTaggedMass"] = sig.make<TH1D>("ZTagMass", ";M (Z Tagged Jet Leptonic);;", 20, 0., 200.);
+     h1_["HTaggedMass"] = sig.make<TH1D>("HTagMass", ";M (H Tagged Jet Leptonic);;", 20, 0., 200.);
+
      h1_["ZJetMasslep"] = sig.make<TH1D>("ZJetMasslep", ";M (Z Jet Leptonic);;", 20, 0., 200.);
      h1_["chi2_chi_Z"] = sig.make<TH1D>("chi2_chi_Z", ";#chi^{2};;", 100, 0., 500.);
      h1_["sqrtChi2_Z"] = sig.make<TH1D>("sqrtChi2_Z", ";#chi;;", 100, 0., 500.);

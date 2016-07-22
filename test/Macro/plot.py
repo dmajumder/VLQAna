@@ -26,7 +26,7 @@ parser.add_option('--globalSF', metavar='SF', type='float',
                   help='Global trigger SF (%default default)')
 
 parser.add_option('--plotDir', metavar='P', type='string', action='store',
-                  default='forMeh',
+                  default='New',
                   dest='plotDir',
                   help='output directory of plots')
 
@@ -36,7 +36,7 @@ parser.add_option('--skimType', metavar='S', type='string', action='store',
                   help='Skim type: CR_Zelel, CR_Zmumu, SR_Zelel, SR_Zmumu')
 
 parser.add_option('--processDir', metavar='pD', type='string', action='store',
-                  default='ana/sig',
+                  default='ana/pre',
                   dest='processDir',
                   help='directory to read histograms from')
 
@@ -141,13 +141,13 @@ vv       = [
             [f_ZZTo4L,     ZZTo4L_xs,      ZZTo4L_num, lumi],
            ]
 
-# tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
+tZtZ_800 = [[f_TpTp_tZtZ_800, TpTp800_xs,         TpTp800_num,       lumi]]
 # #tZbW_800 = [[f_TpTp_tZbW_800, TpTp800_xs,         TpTp800_num,       lumi]]
 # #tZtH_800 = [[f_TpTp_tZtH_800, TpTp800_xs,         TpTp800_num,       lumi]]
-# tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
+tZtZ_1000 = [[f_TpTp_tZtZ_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
 # #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
 # #tZtH_1000 = [[f_TpTp_tZtH_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
-# tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
+tZtZ_1200 = [[f_TpTp_tZtZ_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 # #tZbW_1200 = [[f_TpTp_tZbW_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 # #tZtH_1200 = [[f_TpTp_tZtH_1200, TpTp1200_xs,         TpTp1200_num,       lumi]]
 
@@ -168,60 +168,57 @@ h_dy       = getHisto(dyLabel,         dyLeg,          pDir, var,  dy,       90,
 #h_wjets    = getHisto(wjLabel,         wjLeg,          pDir, var,  wjets,    kBlue,      verbose)
 #h_st       = getHisto(sTLabel,         sTLeg,          pDir, var,  st,       kCyan,      verbose)
 h_vv       = getHisto(vvLabel,         vvLeg,          pDir, var,  vv,       kBlue,       verbose)
-# h_tZtZ_800 = getHisto('TT_tZtZ_M800_', 'TT_tZtZ_M800', pDir, var,  tZtZ_800, kGreen+4,    verbose)
+h_tZtZ_800 = getHisto('TT_tZtZ_M800', 'TT_tZtZ_M800', pDir, var,  tZtZ_800, kRed,    verbose)
 # # #h_tZbW_800 = getHisto('TT_tZbW_M800_', 'TT_tZbW_M800', pDir, var,  tZbW_800, kGreen+3,  verbose)
 # # h_tZtH_800 = getHisto('TT_tZtH_M800_', 'TT_tZtH_M800', pDir, var,  tZtH_800, kGreen+2, verbose)
 
-# h_tZtZ_1000 = getHisto('TT_tZtZ_M1000_', 'TT_tZtZ_M1000', pDir, var, tZtZ_1000, kYellow+2, verbose)
+#h_tZtZ_1000 = getHisto('TT_tZtZ_M1000', 'TT_tZtZ_M1000', pDir, var, tZtZ_1000, kRed+2, verbose)
 # # #tZbW_1000 = [[f_TpTp_tZbW_1000, TpTp1000_xs,         TpTp1000_num,       lumi]]
 # # #h_tZtH_1000 =getHisto('TT_tZtH_M1000_', 'TT_tZtH_M1000', pDir, var, tZtH_1000, kYellow+4, verbose)
 
-# h_tZtZ_1200 = getHisto('TT_tZtZ_M1200_', 'TT_tZtZ_M1200', pDir, var,  tZtZ_1200, kBlue+4,    verbose)
+h_tZtZ_1200 = getHisto('TT_tZtZ_M1200', 'TT_tZtZ_M1200', pDir, var,  tZtZ_1200, kRed+2,    verbose)
 # # #h_tZbW_1200 = getHisto('TT_tZbW_M1200_', 'TT_tZbW_M1200', pDir, var,  tZbW_1200, kBlue+3,  verbose)
 # # h_tZtH_1200 = getHisto('TT_tZtH_M1200_', 'TT_tZtH_M1200', pDir, var,  tZtH_1200, kBlue+2, verbose)
 
 h_bZbZ_800 = getHisto('BB_bZbZ_M800_', 'BB_bZbZ_M800', pDir, var,  bZbZ_800, kCyan,    verbose)
 #h_bZtW_800 = getHisto('BB_bZtW_M800_', 'BB_bZtW_M800', pDir, var,  bZtW_800, kRed+3,  verbose)
 #h_bZbH_800 = getHisto('BB_bZbH_M800_', 'BB_bZbH_M800', pDir, var,  bZbH_800, kRed, verbose)
-h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan+2,    verbose)
+#h_bZbZ_1000 = getHisto('BB_bZbZ_M1000_', 'BB_bZbZ_M1000', pDir, var,  bZbZ_1000, kCyan+2,    verbose)
 #h_bZtW_1000 = getHisto('BB_bZtW_M1000_', 'BB_bZtW_M1000', pDir, var,  bZtW_1000, kOrange+11,    verbose)
 #h_bZbH_1000 = getHisto('BB_bZbH_M1000_', 'BB_bZbH_M1000', pDir, var,  bZbH_1000, kRed+2,    verbose)
-h_bZbZ_1200 = getHisto('BB_bZbZ_M1200_', 'BB_bZbZ_M1200', pDir, var,  bZbZ_1200, kCyan+4,    verbose)
+h_bZbZ_1200 = getHisto('BB_bZbZ_M1200_', 'BB_bZbZ_M1200', pDir, var,  bZbZ_1200, kCyan+2,    verbose)
 #h_bZtW_1200 = getHisto('BB_bZtW_M1200_', 'BB_bZtW_M1200', pDir, var,  bZtW_1200, kMagenta+3,    verbose)
 #h_bZbH_1200 = getHisto('BB_bZbH_M1200_', 'BB_bZbH_M1200', pDir, var,  bZbH_1200, kRed+4,    verbose)
 
-print 'before append'
 templates = []
 templates.append(h_dy)
 templates.append(h_top)
 templates.append(h_vv)
 #templates.append(h_st)
 #templates.append(h_wjets)
-# templates.append(h_tZtZ_800)
+templates.append(h_tZtZ_800)
 # # #templates.append(h_tZbW_800)
 # # templates.append(h_tZtH_800)
-# templates.append(h_tZtZ_1000)
+#templates.append(h_tZtZ_1000)
 # # # #templates.append(h_tZbW_1000)
 #  #templates.append(h_tZtH_1000)
-# templates.append(h_tZtZ_1200)
+templates.append(h_tZtZ_1200)
 # # #templates.append(h_tZbW_1200)
 # # templates.append(h_tZtH_1200)
 templates.append(h_bZbZ_800)
 #templates.append(h_bZtW_800)
 #templates.append(h_bZbH_800)
-templates.append(h_bZbZ_1000)
+#templates.append(h_bZbZ_1000)
 # #templates.append(h_bZtW_1000)
 #templates.append(h_bZbH_1000)
 templates.append(h_bZbZ_1200)
 #templates.append(h_bZtW_1200)
 #templates.append(h_bZbH_1200)
-print 'before file'
 
 # f = TFile(plotDir+"/"+skimType+"/"+var+".root", "RECREATE")
 # for ihist in templates:
 #    ihist.Write()
 # f.Close()
-print 'after file'
 #get background uncertainty
 h_bkg = h_top.Clone()
 h_bkg.Reset()
@@ -251,18 +248,20 @@ for ibin in range(0,nBins+1):
     if pDir == 'ana/pre':
         btag_err = 0
     else:
-        btag_err = 0.04**2
+        btag_err = 0.066**2
 
-    print 'btag err: '+str(btag_err)
     ID_err   = 0.03**2
-    JES_err  = 0.05*0.05
+    JES_err  = 0.021*.021
+    JER_err = .009*.009
+    Pileup_err = .07*.07
+    
     dy_err   = (0.1*iDY)**2
     top_err  = (0.2*iTop)**2
 #    st_err   = (0.3*iTop)**2
 #    wjet_err = (0.1*iWJ)**2
     vv_err   = (0.3*iVV)**2
 
-    new_err = stat_err + lumi_err + btag_err + ID_err + JES_err + dy_err + top_err + vv_err# + wjet_err +st_err
+    new_err = stat_err + lumi_err + btag_err + ID_err + JES_err + JER_err + Pileup_err + dy_err + top_err + vv_err# + wjet_err +st_err
 
     if h_bkg.GetBinError(ibin) != 0: h_bkg.SetBinError(ibin, TMath.Sqrt(new_err))
 
@@ -365,7 +364,8 @@ if h_data.GetMaximum() > hs.GetMaximum():
 else:
     h_data.SetMaximum(hs.GetMaximum())
 
-hs.SetMaximum(hs.GetMaximum()*5)
+#hs.SetMaximum(3.5)
+#hs.SetMaximum(hs.GetMaximum()*5)
 hs.SetMinimum(0.1)
 gPad.SetLogy()
 if var == 'cutflow':

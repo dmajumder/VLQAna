@@ -58,7 +58,7 @@ options.register('FileNames', 'bprime800',
     VarParsing.varType.string,
     "Name of list of input files"
     )
-options.register('optimizeReco', True,
+options.register('optimizeReco', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"

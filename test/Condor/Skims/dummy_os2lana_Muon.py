@@ -88,7 +88,7 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if not options.doSkim:
+if options.doSkim:
   if options.zdecaymode == "zmumu":
     hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -107,7 +107,7 @@ if options.isData:
   options.signalType = "" 
   options.optimizeReco = False
   options.applyLeptonSFs = False
-  options.applyZptCorr = False
+  options.applyHtCorr = False
   options.sys = False
 
 if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:

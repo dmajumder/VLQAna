@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('isData', False,
+options.register('isData', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
@@ -78,7 +78,7 @@ options.register('sys', False,
     VarParsing.varType.bool,
     "Do systematics"
 )
-options.register('short', True,
+options.register('short', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "only signal"
@@ -102,7 +102,7 @@ if not options.doSkim:
       ]
   else:
     sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
-
+print hltpaths
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 

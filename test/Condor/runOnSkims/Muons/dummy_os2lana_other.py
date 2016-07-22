@@ -73,12 +73,12 @@ options.register('doSkim', False,
     VarParsing.varType.bool,
     "Produce skim 1 or 0"
     )
-options.register('sys', True,
+options.register('sys', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do systematics"
 )
-options.register('short', True,
+options.register('short', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,     
     "only signal region"
@@ -88,7 +88,7 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if not options.doSkim:
+if options.doSkim:
   if options.zdecaymode == "zmumu":
     hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -113,7 +113,7 @@ if options.isData:
 if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
-process = cms.Process("OS2LAna")
+process = cms.Process("OS2LAna2")
 
 from inputFiles_cfi import * 
 

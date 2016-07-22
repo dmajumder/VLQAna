@@ -33,7 +33,7 @@ options.register('filterSignal', True,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', 'EvtType_MC_tZtZ',
+options.register('signalType', 'EvtType_MC_bZbZ',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
@@ -73,16 +73,17 @@ options.register('doSkim', False,
     VarParsing.varType.bool,
     "Produce skim 1 or 0"
     )
-options.register('sys', True,
+options.register('sys', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do systematics"
 )
 options.register('short', True,
     VarParsing.multiplicity.singleton,
-    VarParsing.varType.bool,     
-    "only signal region"
+    VarParsing.varType.bool,
+    "only signal"
 )
+
 options.setDefault('maxEvents', -1)
 options.parseArguments()
 print options
@@ -107,13 +108,13 @@ if options.isData:
   options.signalType = "" 
   options.optimizeReco = False
   options.applyLeptonSFs = False
-  options.applyZptCorr = False
+  options.applyHtCorr = False
   options.sys = False
 
 if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
-process = cms.Process("OS2LAna1")
+process = cms.Process("OS2LAna2")
 
 from inputFiles_cfi import * 
 
@@ -134,6 +135,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
+process.evtcleaner.doSkim = options.doSkim
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
@@ -239,6 +241,15 @@ process.allEvents = eventCounter.clone(isData=options.isData)
 process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
+if 'MC_t' in options.signalType:
+  process.anaH = process.ana.clone(
+    signalType = 'EvtType_MC_tZtH'
+)
+elif 'MC_b' in options.signalType:
+  process.anaH = process.ana.clone(
+    signalType = 'EvtType_MC_bZbH'
+)
+
 if options.sys:
   process.p = cms.Path(
     process.allEvents
@@ -261,6 +272,7 @@ else:
     *process.evtcleaner
     #*process.cleanedEvents
     *cms.ignore(process.ana)
+    *cms.ignore(process.anaH)
     #* process.finalEvents
     )
 
