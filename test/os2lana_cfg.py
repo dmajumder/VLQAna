@@ -33,7 +33,7 @@ options.register('filterSignal', False,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', 'EvtType_MC_bZbZ',
+options.register('signalType', '',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
@@ -89,7 +89,7 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if not options.doSkim:
+if options.doSkim:
   if options.zdecaymode == "zmumu":
     hltpaths = [
       "HLT_DoubleIsoMu17_eta2p1_v", 
@@ -124,7 +124,25 @@ process.source = cms.Source(
       #FileNames[options.FileNames]
     #'file:os2lana_skim.root',
 #'root://cms-xrd-global.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleMuon/B2GAnaFW_76X_V1p2/160406_175248/0002/B2GEDMNtuple_2342.root'
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/bprime800/skims/Skim_bprime800_1.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_10.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_11.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_12.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_13.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_14.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_15.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_16.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_17.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_18.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_19.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_111.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_112.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_113.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_114.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_115.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_116.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_1435.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_134.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_176.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_175235/0000/B2GEDMNtuple_1.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
@@ -271,7 +289,7 @@ if options.sys:
     *cms.ignore(process.anaPileupUp)
     *cms.ignore(process.anaPileupDown)
   )
-else:
+elif not options.sys and not options.isData:
   process.p = cms.Path(
     process.allEvents
     *process.evtcleaner
@@ -279,6 +297,12 @@ else:
     *cms.ignore(process.ana)
     *cms.ignore(process.anaH)
     #* process.finalEvents
+    )
+else:
+  process.p = cms.Path(
+    process.allEvents
+    *process.evtcleaner
+    *cms.ignore(process.ana)
     )
 
 if options.doSkim:

@@ -47,7 +47,7 @@ double MassReco::findInvMass(TLorentzVector gen1, TLorentzVector gen2, TLorentzV
 	return(genSum);
 }
 
-pair<double, double> MassReco::doReco(vlq::JetCollection ak4Jets, TLorentzVector fatJet, double bosMass, TLorentzVector Leptons, double pT){
+pair<double, double> MassReco::doReco(vlq::JetCollection ak4Jets, vlq::Jet fatJet, double bosMass, TLorentzVector Leptons, double pT){
   pair<double, double> chi2_result;
   double loop = 100000;
   vector<pair<double, double> > chi2s;
@@ -209,14 +209,15 @@ double MassReco::chi2(vector<TLorentzVector> jets, TLorentzVector Leptons, doubl
     return(-999);
 }
 
-double MassReco::chi2(vector<TLorentzVector> ak4Jets, TLorentzVector ak8Jet, TLorentzVector Leptons, double bosMass, double mass, double pT){
+double MassReco::chi2(vector<TLorentzVector> ak4Jets, vlq::Jet ak8Jet, TLorentzVector Leptons, double bosMass, double mass, double pT){
 
-  if (ak8Jet.Pt() > pT){
-   double Zup = abs(ak8Jet.M() - bosMass);
+  if (ak8Jet.getPt() > pT){
+   double Zup = abs(ak8Jet.getPrunedMass() - bosMass);
    double Zup2 = Zup * Zup;
    double term1 = Zup2 / (13.835*13.835);
 
-   double BHup = abs((ak8Jet + ak4Jets[0]).M() - mass);
+   double BHup = abs((ak8Jet.getPrunedMass() + ak4Jets[0].M()) - mass);
+   //double BHup = abs((ak8Jet + ak4Jets[0]).M() - mass);
    double BHup2 = BHup * BHup;
    double term2 = BHup2 / (80*80);
 

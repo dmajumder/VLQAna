@@ -263,7 +263,8 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      }
   }
   const bool hltdecision(*h_hltdecision.product()) ; 
-  if ( !hltdecision ) return false;
+  if ( !hltdecision ){cout << "hlt false" << endl; return false;}
+
 
   //double evtwtgen(*h_evtwtGen.product());
 
@@ -437,16 +438,6 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   double btagsf_bcDown(1) ; 
   double btagsf_lUp(1) ; 
   double btagsf_lDown(1) ;
-  // if (btagsf_bcUp_)
-  //   btagsf_bcUp = 2;
-  // if (btagsf_bcDown_)
-  //   btagsf_bcDown = 2;
-  // if (btagsf_lUp_)
-  //   btagsf_lUp = 2;
-  // if (btagsf_lDown_)
-  //   btagsf_lDown = 2;
-
-  //cout << btagsf << " " << btagsf_bcUp << " " << btagsf_bcDown << " " << btagsf_lUp << " " << btagsf_lDown << endl;
 
   if ( applyBTagSFs_ && *h_evttype.product() != "EvtType_Data") {
      std::vector<double>csvs;
@@ -791,13 +782,13 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 
 
  if (goodWTaggedJets.size() >0 && goodAK4Jets.size() > 1)
-    chi2_result_Z_boost = reco.doReco(goodAK4Jets, goodWTaggedJets.at(0).getP4(), 91.2, Leptons, recoPt_);
+    chi2_result_Z_boost = reco.doReco(goodAK4Jets, goodWTaggedJets.at(0), 91.2, Leptons, recoPt_);
   else if (goodHTaggedJets.size() > 0 && goodAK4Jets.size() > 1)
-    chi2_result_H_boost = reco.doReco(goodAK4Jets, goodHTaggedJets.at(0).getP4(), 125., Leptons, recoPt_); 
+    chi2_result_H_boost = reco.doReco(goodAK4Jets, goodHTaggedJets.at(0), 125., Leptons, recoPt_); 
  if (goodWTaggedJets.size() > 0)
-   h1_["WTaggedMass"]->Fill(goodWTaggedJets.at(0).getP4().M(), evtwt);
+   h1_["WTaggedMass"]->Fill(goodWTaggedJets.at(0).getPrunedMass(), evtwt);
  else if (goodHTaggedJets.size() > 0)
-   h1_["HTaggedMass"]->Fill(goodHTaggedJets.at(0).getP4().M(), evtwt);
+   h1_["HTaggedMass"]->Fill(goodHTaggedJets.at(0).getPrunedMass(), evtwt);
 
   //Fill Histograms
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);

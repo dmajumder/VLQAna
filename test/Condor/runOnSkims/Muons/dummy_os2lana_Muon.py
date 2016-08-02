@@ -88,19 +88,18 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if options.doSkim:
-  if options.zdecaymode == "zmumu":
-    hltpaths = [
-      "HLT_DoubleIsoMu17_eta2p1_v", 
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-      ]
-  elif options.zdecaymode == "zelel":
-    hltpaths = [
-      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-      ]
-  else:
-    sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+# if options.zdecaymode == "zmumu":
+#   hltpaths = [
+#     "HLT_DoubleIsoMu17_eta2p1_v", 
+#     "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+#     ]
+# elif options.zdecaymode == "zelel":
+#   hltpaths = [
+#     "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+#     "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+#     ]
+# else:
+#   sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
 if options.isData:
   options.filterSignal = False 
@@ -113,7 +112,7 @@ if options.isData:
 if options.filterSignal == True and options.doSkim == False and len(options.signalType) == 0:
   sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!")  
 
-process = cms.Process("OS2LAna1")
+process = cms.Process("OS2LAna2")
 
 from inputFiles_cfi import * 
 
@@ -135,6 +134,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
 process.evtcleaner.isData = options.isData 
+process.evtcleaner.doSkim = options.doSkim
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
 #process.evtcleaner.storeLHEWts = options.storeLHEWts
@@ -221,7 +221,7 @@ process.TFileService = cms.Service("TFileService",
        )
 
 outCommand = ['keep *', 'drop *_evtcleaner_*_*', 'drop *_photons_*_*', 'drop *_photonjets_*_*', 'drop *_*Puppi_*_*', 'drop *_TriggerResults_*_*']
-if options.isData:
+if options.isData and options.doSkim:
   outCommand.append('drop *_TriggerUserData_triggerNameTree_*')
   outCommand.append('drop *_TriggerUserData_triggerPrescaleTree_*')
   outCommand.append('drop *_METUserData_triggerNameTree_*')
@@ -239,29 +239,26 @@ process.allEvents = eventCounter.clone(isData=options.isData)
 process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
-if options.sys:
-  process.p = cms.Path(
-    process.allEvents
-    *process.evtcleaner
-    *cms.ignore(process.ana)
-    *cms.ignore(process.anabcUp)
-    *cms.ignore(process.anabcDown)
-    *cms.ignore(process.analightUp)
-    *cms.ignore(process.analightDown)
-    *cms.ignore(process.anaJecUp)
-    *cms.ignore(process.anaJecDown)
-    *cms.ignore(process.anaJerUp)
-    *cms.ignore(process.anaJerDown)
-    *cms.ignore(process.anaPileupUp)
-    *cms.ignore(process.anaPileupDown)
-  )
-else:
-  process.p = cms.Path(
-    process.allEvents
-    *process.evtcleaner
-    #*process.cleanedEvents
-    *cms.ignore(process.ana)
-    #* process.finalEvents
+if options.sys:                                                                                                                                                                                                    
+  process.p = cms.Path(                                                                                                                                                                                            
+    process.allEvents                                                                                                                                                                                              
+    *process.evtcleaner                                                                                                                                                                                            
+    *cms.ignore(process.ana)                                                                                                                                                                                       
+    *cms.ignore(process.anabcUp)                                                                                                                                                                                   
+    *cms.ignore(process.anabcDown)                                                                                                                                                                                 
+    *cms.ignore(process.analightUp)                                                                                                                                                                                
+    *cms.ignore(process.analightDown)                                                                                                                                                                              
+    *cms.ignore(process.anaJecUp)                                                                                                                                                                                  
+    *cms.ignore(process.anaJecDown)                                                                                                                                                                                
+    *cms.ignore(process.anaJerUp)                                                                                                                                                                                  
+    *cms.ignore(process.anaJerDown)                                                                                                                                                                                
+    *cms.ignore(process.anaPileupUp)                                                                                                                                                                               
+    *cms.ignore(process.anaPileupDown)                                                                                                                                                                             
+  )                                                                                                                                                                                                                
+elif not options.sys and not options.isData:                                                                                                                                                                        process.p = cms.Path(                                                                                                                                                                                               process.allEvents                                                                                                                                                                                                 *process.evtcleaner                                                                                                                                                                                               #*process.cleaned
+                                                                                                                                                                                                                                                                                                                                                                                                                                        *cms.ignore(process.ana)                                                                                                                                                                                          *cms.ignore(process.anaH)                                                                                                                                                                                         #* process.finalEvents                                                                                                                                                                                            )
+                                                                                                                                                                                                                                                                                                                                                                                                                                        )
+else:                                                                                                                                                                                                                process.p = cms.Path(                                                                                                                                                                                                process.allEvents                                                                                                                                                                                                 *process.evtcleaner                                                                                                                                                                                               *cms.ignore(process.ana)
     )
 
 if options.doSkim:

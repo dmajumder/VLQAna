@@ -217,11 +217,12 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
       }
     }
   }
-   bool hltdecision(false) ; 
+  bool hltdecision(false) ; 
   if ( hltPaths_.size() > 0 && !hltdecisions) hltdecision=false;
+  else if (hltPaths_.size() == 0) hltdecision=false;
   else hltdecision=true;
   
-  if (!doSkim_) hltdecision=true;
+  //if (doSkim_) hltdecision=true;
 
   ////if ( cleanEvents_ && hltdecision==false ) return false ; 
 
