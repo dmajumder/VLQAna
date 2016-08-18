@@ -2,7 +2,7 @@
 
 import subprocess
 
-suffix = '_pre'
+suffix = '_cnt'
 channel = 'mu'
 options = [
 
@@ -72,7 +72,7 @@ options = [
      # ['3jets'],
     ]
 
-command = "python plot.py --var={0:s} --plotDir='newSystematics'"
+command = "python plot.py --var={0:s} --plotDir='NEW'"
 
 for option in options :
     s = command.format(

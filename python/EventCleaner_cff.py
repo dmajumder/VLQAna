@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 from Analysis.VLQAna.VLQParams_cfi import * 
 
 evtcleaner = cms.EDFilter("EventCleaner",
-    doSkim                     = cms.bool(False),
     runnoLabel                 = cms.InputTag("eventInfo", "evtInfoRunNumber"),
     lumisecLabel               = cms.InputTag("eventInfo", "evtInfoLumiBlock"),
     evtnoLabel                 = cms.InputTag("eventInfo", "evtInfoEventNumber"),

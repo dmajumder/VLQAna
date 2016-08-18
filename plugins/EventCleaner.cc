@@ -36,7 +36,6 @@ class EventCleaner : public edm::EDFilter {
     edm::LumiReWeighting LumiWeightsLow_;
     edm::LumiReWeighting LumiWeightsHigh_;
   
-    const bool doSkim_                                      ;
     edm::InputTag l_runno                                  ; 
     edm::InputTag l_lumisec                                ; 
     edm::InputTag l_evtno                                  ; 
@@ -87,7 +86,6 @@ class EventCleaner : public edm::EDFilter {
 };
 
 EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
-  doSkim_               (iConfig.getParameter<bool>            ("doSkim")),
   l_runno                 (iConfig.getParameter<edm::InputTag>            ("runnoLabel")),
   l_lumisec               (iConfig.getParameter<edm::InputTag>            ("lumisecLabel")),
   l_evtno                 (iConfig.getParameter<edm::InputTag>            ("evtnoLabel")),
@@ -188,12 +186,8 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<unsigned int> h_runno    ; evt.getByLabel (l_runno                  , h_runno                );
   Handle<unsigned int> h_lumisec  ; evt.getByLabel (l_lumisec                , h_lumisec              );
   Handle<ULong64_t> h_evtno       ; evt.getByLabel (l_evtno                  , h_evtno                );
-  hstring h_trigName              ;
-  hstring h_metFiltersName        ;
-  if (doSkim_){
-    evt.getByLabel (l_trigName               , h_trigName             );
-    evt.getByLabel (l_metFiltersName         , h_metFiltersName       );
-  }
+  hstring h_trigName              ; evt.getByLabel (l_trigName               , h_trigName             );
+  hstring h_metFiltersName        ; evt.getByLabel (l_metFiltersName         , h_metFiltersName       );
   hfloat  h_trigBit               ; evt.getByLabel (l_trigBit                , h_trigBit              ); 
   hfloat  h_metFiltersBit         ; evt.getByLabel (l_metFiltersBit          , h_metFiltersBit        ); 
   hfloat  h_vtxRho                ; evt.getByLabel (l_vtxRho                 , h_vtxRho               );
@@ -207,7 +201,6 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   const int evtno  ( (2*isData_ - 1) * (*h_evtno) )   ; //// If MC, -ve sign for evtno  
 
   unsigned int hltdecisions(0) ; 
-  if (doSkim_){
     for ( const string& myhltpath : hltPaths_ ) {
       vector<string>::const_iterator it ;
       for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
@@ -216,19 +209,14 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 	}
       }
     }
-  }
   bool hltdecision(false) ; 
   if ( hltPaths_.size() > 0 && !hltdecisions) hltdecision=false;
-  else if (hltPaths_.size() == 0) hltdecision=false;
   else hltdecision=true;
-  
-  //if (doSkim_) hltdecision=true;
 
   ////if ( cleanEvents_ && hltdecision==false ) return false ; 
 
   if ( isData_ ) {
     bool metfilterdecision(1) ;
-    if (doSkim_){
       for ( const string& metfilter : metFilters_ ) {
 	vector<string>::const_iterator it ; 
 	for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
@@ -238,7 +226,6 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 	}
       }
       if ( !metfilterdecision ) return false ; 
-    }
   }
 
   const int npv(*h_npv) ; 

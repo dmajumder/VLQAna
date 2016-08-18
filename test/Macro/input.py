@@ -3,7 +3,7 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/withSystematics/muons/'
+path = '/uscms_data/d3/tmitchel/76X_test/CMSSW_7_6_5/src/Analysis/VLQAna/test/Macro/Histograms/withSystematics/new/muons/'
 pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
 
@@ -100,12 +100,12 @@ BpBp800_xs        = 0.196   *gSF
 BpBp1000_xs       = 0.044   *gSF
 BpBp1200_xs       = 0.0118  *gSF
 
-BpBp800_xs = 1.
-BpBp1000_xs = 1.
-BpBp1200_xs = 1.
-TpTp800_xs= 1.
-TpTp1000_xs = 1.
-TpTp1200_xs = 1.
+# BpBp800_xs = 1.
+# BpBp1000_xs = 1.
+# BpBp1200_xs = 1.
+# TpTp800_xs= 1.
+# TpTp1000_xs = 1.
+# TpTp1200_xs = 1.
 
 #===== Number of generated events ======
 
@@ -254,7 +254,7 @@ def getHisto( label, leg, dir, var, Samples, color, verbose) :
         #     xs = 0
         #     hist.SetMarkerColorAlpha(color, 100)
         hist.Scale( xs * lumi /nevt)
-#        hist.Rebin(4)
+#        hist.Rebin(3)
         histos.append( hist )
         
     histo = histos[0]

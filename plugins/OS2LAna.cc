@@ -231,9 +231,10 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<double>   h_evtwtGen    ; evt.getByToken(t_evtwtGen   , h_evtwtGen   ) ; 
   Handle<double>   h_evtwtPV     ; evt.getByToken(t_evtwtPV    , h_evtwtPV    ) ; 
   Handle<double>  h_evtwtPVLow ; evt.getByToken(t_evtwtPVLow, h_evtwtPVLow );
- Handle<double>  h_evtwtPVHigh ; evt.getByToken(t_evtwtPVHigh, h_evtwtPVHigh );
+  Handle<double>  h_evtwtPVHigh ; evt.getByToken(t_evtwtPVHigh, h_evtwtPVHigh );
   Handle<unsigned> h_npv         ; evt.getByToken(t_npv        , h_npv        ) ; 
   Handle<bool>     h_hltdecision ; evt.getByToken(t_hltdecision, h_hltdecision) ; 
+
   h1_["checkPU"]->Fill(*h_npv.product(), *h_evtwtGen.product());
   if(zdecayMode_ == "zmumu") {lep = "mu";}
   else if ( zdecayMode_ == "zelel") {lep = "el";}
@@ -263,8 +264,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      }
   }
   const bool hltdecision(*h_hltdecision.product()) ; 
-  if ( !hltdecision ){cout << "hlt false" << endl; return false;}
-
+  if ( !hltdecision ) return false;
 
   //double evtwtgen(*h_evtwtGen.product());
 
@@ -598,6 +598,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["npv"] -> Fill(*h_npv.product(), evtwt);
   h1_["met"] -> Fill(goodMet.at(0).getFullPt(), evtwt);
   h1_["metPhi"] -> Fill(goodMet.at(0).getFullPhi(), evtwt);
+
   //lepton specfic properties
   if ( zdecayMode_ == "zmumu" ){       
     for(int l=0; l<2; ++l){
@@ -618,7 +619,15 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      h1_[Form("ptak4jet%d", j+1)]  -> Fill(goodAK4Jets.at(j).getPt(), evtwt) ; 
      h1_[Form("etaak4jet%d", j+1)] -> Fill(goodAK4Jets.at(j).getEta(), evtwt) ;
      h1_[Form("cvsak4jet%d", j+1)] -> Fill(goodAK4Jets.at(j).getCSV(), evtwt) ;
+}
+  for (int i=0; i<3; i++){
+    h1_["mak4Jet1"] ->Fill(goodAK4Jets.at(i).getMass(), evtwt);
+    if (goodAK4Jets.at(i).getMass() > 60 && goodAK4Jets.at(i).getMass() < 120) 
+      h1_["mak4_ratio"] -> Fill(1, evtwt);
+    h1_["mak4_ratio"] ->Fill(2, evtwt);
   }
+
+
   h1_["phi_jet1MET"] -> Fill( (goodAK4Jets.at(0).getP4()).DeltaPhi(goodMet.at(0).getP4()), evtwt);
 
   // fill the b-tagging plots and efficiency maps
@@ -751,6 +760,7 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   pair<double, double> chi2_result_H;
   pair<double, double> chi2_result_Z_boost;
   pair<double, double> chi2_result_H_boost;
+  // pair<double, double> chi2_result_Z_ak4;
   if (goodAK4Jets.size() >= 4){
     chi2_result_Z = reco.doReco(goodAK4Jets, 91.2, Leptons, recoPt_);
     chi2_result_H = reco.doReco(goodAK4Jets, 125., Leptons, recoPt_); 
@@ -768,25 +778,42 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      chi2_result_H.second = -999;
   }
 
-  TLorentzVector nu;
-  nu = goodMet.at(0).getP4();
+  // TLorentzVector nu;
+  // nu = goodMet.at(0).getP4();
 
-  double sol1 = 0, sol2 = 0;
-  bool IsMETpz = solve_nu(lep1, nu, 80.4, sol1, sol2);
-  if (IsMETpz){
-    nu.SetPz(sol1);
-    adjust_e_for_mass(nu, 0.);
-  }
+  // double sol1 = 0, sol2 = 0;
+  // bool IsMETpz = solve_nu(lep1, nu, 80.4, sol1, sol2);
+  // if (IsMETpz){
+  //   nu.SetPz(sol1);
+  //   adjust_e_for_mass(nu, 0.);
+  // }
 
-  h1_["semiLep"] -> Fill(goodBTaggedAK4Jets.at(0).getP4().M() + nu.M() + lep1.M(), evtwt);
+  // h1_["semiLep"] -> Fill(goodBTaggedAK4Jets.at(0).getP4().M() + nu.M() + lep1.M(), evtwt);
+
+  // for (unsigned i=0; i<goodAK4Jets.size(); i++){
+  //   if (goodAK4Jets.at(i).getMass() > 60 && goodAK4Jets.at(i).getMass() < 120)
+  //     chi2_result_Z_ak4 = reco.doReco(goodAK4Jets, goodAK4Jets.at(i), 91.2, Leptons, recoPt_);
+  //   else{
+  //     chi2_result_Z_ak4.first = -999;
+  //     chi2_result_Z_ak4.second=-999;
+  //   }
+  //   h1_["chi2_mass_Z_ak4"] -> Fill(chi2_result_Z_ak4.second, evtwt);
+  // }
+
 
 
  if (goodWTaggedJets.size() >0 && goodAK4Jets.size() > 1)
     chi2_result_Z_boost = reco.doReco(goodAK4Jets, goodWTaggedJets.at(0), 91.2, Leptons, recoPt_);
   else if (goodHTaggedJets.size() > 0 && goodAK4Jets.size() > 1)
     chi2_result_H_boost = reco.doReco(goodAK4Jets, goodHTaggedJets.at(0), 125., Leptons, recoPt_); 
+  else{
+    chi2_result_H_boost.first = 9999;
+    chi2_result_Z_boost.first = 9999;
+  }
  if (goodWTaggedJets.size() > 0)
-   h1_["WTaggedMass"]->Fill(goodWTaggedJets.at(0).getPrunedMass(), evtwt);
+   for (unsigned i=0; i < goodWTaggedJets.size(); i++){
+   h1_["WTaggedMass"]->Fill(goodWTaggedJets.at(i).getPrunedMass(), evtwt);
+   }
  else if (goodHTaggedJets.size() > 0)
    h1_["HTaggedMass"]->Fill(goodHTaggedJets.at(0).getPrunedMass(), evtwt);
 
@@ -794,18 +821,20 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["ZJetMasslep"] ->Fill(Leptons.M(), evtwt);
   h1_["chi2_chi_Z"] ->Fill(chi2_result_Z.first, evtwt);
   h1_["sqrtChi2_Z"] ->Fill(sqrt(chi2_result_Z.first), evtwt);
-  if (chi2_result_Z.second == -998)
-    h1_["3jets"] ->Fill(1, evtwt);
-  else if (chi2_result_Z.second > 0){
-    h1_["chi2_mass_Z"] ->Fill(chi2_result_Z.second, evtwt);
-    h1_["chi2_mass_H"] ->Fill(chi2_result_H.second, evtwt);
-    h1_["chi2_mass_Z_boost"]->Fill(chi2_result_Z_boost.second, evtwt);
-    h1_["chi2_mass_H_boost"]->Fill(chi2_result_H_boost.second, evtwt);
-    h1_["chi2_mass_Z_com"]->Fill(chi2_result_Z.second, evtwt);
-    h1_["chi2_mass_H_com"]->Fill(chi2_result_H.second, evtwt);
-    h1_["chi2_mass_Z_com"]->Fill(chi2_result_Z_boost.second, evtwt);
-    h1_["chi2_mass_H_com"]->Fill(chi2_result_H_boost.second,evtwt);
-      }
+
+  if (chi2_result_Z.second == -998) h1_["3jets"] ->Fill(1, evtwt);
+  else if (chi2_result_Z.second > 0) h1_["chi2_mass_Z"] ->Fill(chi2_result_Z.second, evtwt);
+
+  if (chi2_result_Z_boost.second > 0) h1_["chi2_mass_Z_boost"] ->Fill(chi2_result_Z_boost.second, evtwt);
+  if (chi2_result_H.second > 0) h1_["chi2_mass_H"] ->Fill(chi2_result_H.second, evtwt);
+  if (chi2_result_H_boost.second > 0) h1_["chi2_mass_H_boost"] ->Fill(chi2_result_H_boost.second, evtwt);
+
+  if (chi2_result_Z.first < chi2_result_Z_boost.first) h1_["chi2_mass_Z_com"] -> Fill(chi2_result_Z.second, evtwt); 
+  else h1_["chi2_mass_Z_com"]->Fill(chi2_result_Z_boost.second, evtwt);
+
+  if (chi2_result_H.first < chi2_result_H_boost.first) h1_["chi2_mass_H_com"]->Fill(chi2_result_H.second, evtwt);
+  else  h1_["chi2_mass_H_com"]->Fill(chi2_result_H_boost.second, evtwt);
+
   return true ; 
   }
 
@@ -866,6 +895,9 @@ void OS2LAna::beginJob() {
      h1_["pt_zc_pre"] = pre.make<TH1D>("pt_zc_pre", "p_{T} (Z + c) [GeV]", 100, 0., 2000.) ;
      h1_["nob_ht"]= cnt.make<TH1D>("nob_ht", "HT no b tags", 100, 0., 3000.);
      }
+     
+     h1_["mak4Jet1"] = sig.make<TH1D>("mak4Jet1", "M (AK4 jets) [GeV]", 100, 0., 200.) ;
+     h1_["mak4_ratio"] = sig.make<TH1D>("mak4_ratio", "Ratio of W mass Jets", 3, -0.5, 2.5) ;
 
      for (unsigned i=0; i<bookDir.size(); i++){
        h1_[("npv_noweight"+suffix[i]).c_str()] = bookDir[i]->make<TH1D>( ("npv_noweight"+suffix[i]).c_str(), ";N(PV);;", 51, -0.5, 50.5) ; 
@@ -1024,6 +1056,7 @@ void OS2LAna::beginJob() {
      h1_["chi2_mass_Z_boost"] = sig.make<TH1D>("chi_mass_Z_boost", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi2_mass_H_com"] = sig.make<TH1D>("chi_mass_H_com", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["chi2_mass_Z_com"] = sig.make<TH1D>("chi_mass_Z_com", ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
+     h1_["chi2_mass_Z_ak4"] = sig.make<TH1D>("chi2_mass_Z_ak4",  ";M_{#chi^{2}}(B);;", 60, 200., 2000.);
      h1_["semiLep"] = sig.make<TH1D>("semiLep t", "M_{t} SemiLeptonic", 15, 0., 300.);
      
      //electrons specific varaibles in EE and EB at preselection level

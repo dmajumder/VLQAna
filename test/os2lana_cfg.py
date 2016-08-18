@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('isData', True,
+options.register('isData', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
@@ -23,27 +23,27 @@ options.register('outFileName', 'os2lana.root',
     VarParsing.varType.string,
     "Output file name"
     )
-options.register('doPUReweightingOfficial', False,
+options.register('doPUReweightingOfficial', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Do pileup reweighting using official recipe"
     )
-options.register('filterSignal', False,
+options.register('filterSignal', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Select only tZtt or bZbZ modes"
     )
-options.register('signalType', '',
+options.register('signalType', 'EvtType_MC_bZbZ',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Select one of EvtType_MC_tZtZ, EvtType_MC_tZtH, EvtType_MC_tZbW, EvtType_MC_tHtH, EvtType_MC_tHbW, EvtType_MC_bWbW, EvtType_MC_bZbZ, EvtType_MC_bZbH, EvtType_MC_bZtW, EvtType_MC_bHbH, EvtType_MC_bHtW, EvtType_MC_tWtW" 
     )
-options.register('applyLeptonSFs', False,
+options.register('applyLeptonSFs', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply lepton SFs to the MC"
     )
-options.register('applyBTagSFs', False,
+options.register('applyBTagSFs', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Apply b-tagging SFs to the MC"
@@ -58,7 +58,7 @@ options.register('FileNames', 'bprime800',
     VarParsing.varType.string,
     "Name of list of input files"
     )
-options.register('optimizeReco', False,
+options.register('optimizeReco', True,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Optimize mass reconstruction"
@@ -102,7 +102,7 @@ if options.doSkim:
       ]
   else:
     sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
-print hltpaths
+
 if options.isData:
   options.filterSignal = False 
   options.signalType = "" 
@@ -121,28 +121,29 @@ from inputFiles_cfi import *
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-      #FileNames[options.FileNames]
+     #FileNames[options.FileNames]
     #'file:os2lana_skim.root',
 #'root://cms-xrd-global.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleMuon/B2GAnaFW_76X_V1p2/160406_175248/0002/B2GEDMNtuple_2342.root'
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_10.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_11.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_12.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_13.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_14.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_15.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_16.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_17.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_18.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_19.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_111.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_112.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_113.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_114.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_115.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_116.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_1435.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_134.root',
-'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_176.root',
+'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/bprime800/skims/Skim_bprime800_1.root'
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_10.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_11.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_12.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_13.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_14.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_15.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_16.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_17.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_18.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_19.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_111.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_112.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_113.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_114.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_115.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_116.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_1435.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_134.root',
+# 'root://cmseos.fnal.gov//store/user/lpcbprime/noreplica/tmitchel/Muons/muons/skims/Skim_muons_176.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/DoubleEG/B2GAnaFW_76X_V1p2/160406_175235/0000/B2GEDMNtuple_1.root',
 #'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160408_145006/0000/B2GEDMNtuple_10.root',
@@ -158,7 +159,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
-process.evtcleaner.doSkim = options.doSkim
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
@@ -246,10 +246,6 @@ process.TFileService = cms.Service("TFileService",
        )
 
 outCommand = ['keep *', 'drop *_evtcleaner_*_*', 'drop *_photons_*_*', 'drop *_photonjets_*_*', 'drop *_*Puppi_*_*', 'drop *_TriggerResults_*_*']
-if options.isData:
-  outCommand.append('drop *_TriggerUserData_triggerNameTree_*')
-  outCommand.append('drop *_TriggerUserData_triggerPrescaleTree_*')
-  outCommand.append('drop *_METUserData_triggerNameTree_*')
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outFileName.split('.',1)[0]+'_skim.root'),

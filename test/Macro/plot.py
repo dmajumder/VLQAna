@@ -36,7 +36,7 @@ parser.add_option('--skimType', metavar='S', type='string', action='store',
                   help='Skim type: CR_Zelel, CR_Zmumu, SR_Zelel, SR_Zmumu')
 
 parser.add_option('--processDir', metavar='pD', type='string', action='store',
-                  default='ana/pre',
+                  default='ana/cnt',
                   dest='processDir',
                   help='directory to read histograms from')
 
@@ -363,6 +363,9 @@ if h_data.GetMaximum() > hs.GetMaximum():
     hs.SetMaximum(h_data.GetMaximum())
 else:
     h_data.SetMaximum(hs.GetMaximum())
+
+# hs.SetMaximum(10)
+# h_data.SetMaximum(10)
 
 #hs.SetMaximum(3.5)
 #hs.SetMaximum(hs.GetMaximum()*5)

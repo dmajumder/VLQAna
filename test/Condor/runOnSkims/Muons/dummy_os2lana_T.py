@@ -89,19 +89,18 @@ options.parseArguments()
 print options
 
 hltpaths = []
-if options.doSkim:
-  if options.zdecaymode == "zmumu":
-    hltpaths = [
-      "HLT_DoubleIsoMu17_eta2p1_v", 
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-      ]
-  elif options.zdecaymode == "zelel":
-    hltpaths = [
-      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-      ]
-  else:
-    sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
+if options.zdecaymode == "zmumu":
+  hltpaths = [
+    "HLT_DoubleIsoMu17_eta2p1_v", 
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+    ]
+elif options.zdecaymode == "zelel":
+  hltpaths = [
+    "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    ]
+else:
+  sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!") 
 
 if options.isData:
   options.filterSignal = False 
@@ -135,7 +134,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff") 
-process.evtcleaner.doSkim = options.doSkim
 process.evtcleaner.isData = options.isData 
 process.evtcleaner.hltPaths = cms.vstring (hltpaths)  
 process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)  
