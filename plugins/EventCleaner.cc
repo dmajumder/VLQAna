@@ -35,7 +35,7 @@ class EventCleaner : public edm::EDFilter {
     edm::LumiReWeighting LumiWeights_;
     edm::LumiReWeighting LumiWeightsLow_;
     edm::LumiReWeighting LumiWeightsHigh_;
-
+  
     edm::InputTag l_runno                                  ; 
     edm::InputTag l_lumisec                                ; 
     edm::InputTag l_evtno                                  ; 
@@ -55,6 +55,7 @@ class EventCleaner : public edm::EDFilter {
     const bool isData_                                     ; 
     const bool doPUReweightingOfficial_                    ;
     const std::string file_PVWt_                           ; 
+    const std::string file_EWK_                            ;
     const std::string file_PUDistData_                     ;
     const std::string file_PUDistDataLow_                  ;
     const std::string file_PUDistDataHigh_                 ;
@@ -75,12 +76,12 @@ class EventCleaner : public edm::EDFilter {
     edm::ParameterSet BbHParams_                           ;
     edm::ParameterSet BtWParams_                           ;
 
-    PickGenPart pickTtZ                                    ; 
-    PickGenPart pickTtH                                    ; 
-    PickGenPart pickTbW                                    ; 
-    PickGenPart pickBbZ                                    ; 
-    PickGenPart pickBbH                                    ; 
-    PickGenPart pickBtW                                    ; 
+   PickGenPart pickTtZ                                    ; 
+   PickGenPart pickTtH                                    ; 
+   PickGenPart pickTbW                                    ; 
+   PickGenPart pickBbZ                                    ; 
+   PickGenPart pickBbH                                    ; 
+   PickGenPart pickBtW                                    ; 
 
 };
 
@@ -88,7 +89,7 @@ EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
   l_runno                 (iConfig.getParameter<edm::InputTag>            ("runnoLabel")),
   l_lumisec               (iConfig.getParameter<edm::InputTag>            ("lumisecLabel")),
   l_evtno                 (iConfig.getParameter<edm::InputTag>            ("evtnoLabel")),
-  l_trigName              (iConfig.getParameter<edm::InputTag>            ("trigNameLabel")),
+  l_trigName           (iConfig.getParameter<edm::InputTag>         ("trigNameLabel")),
   l_trigBit               (iConfig.getParameter<edm::InputTag>            ("trigBitLabel")),
   l_metFiltersName        (iConfig.getParameter<edm::InputTag>            ("metFiltersNameLabel")),
   l_metFiltersBit         (iConfig.getParameter<edm::InputTag>            ("metFiltersBitLabel")),
@@ -104,6 +105,7 @@ EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
   isData_                 (iConfig.getParameter<bool>                     ("isData")),
   doPUReweightingOfficial_(iConfig.getParameter<bool>                     ("DoPUReweightingOfficial")),
   file_PVWt_              (iConfig.getParameter<std::string>              ("File_PVWt")),
+  file_EWK_               (iConfig.getParameter<std::string>              ("File_EWK")),
   file_PUDistData_        (iConfig.getParameter<std::string>              ("File_PUDistData")),
   file_PUDistDataLow_     (iConfig.getParameter<std::string>              ("File_PUDistDataLow")),
   file_PUDistDataHigh_    (iConfig.getParameter<std::string>              ("File_PUDistDataHigh")),
@@ -185,8 +187,8 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   Handle<unsigned int> h_lumisec  ; evt.getByLabel (l_lumisec                , h_lumisec              );
   Handle<ULong64_t> h_evtno       ; evt.getByLabel (l_evtno                  , h_evtno                );
   hstring h_trigName              ; evt.getByLabel (l_trigName               , h_trigName             );
-  hfloat  h_trigBit               ; evt.getByLabel (l_trigBit                , h_trigBit              ); 
   hstring h_metFiltersName        ; evt.getByLabel (l_metFiltersName         , h_metFiltersName       );
+  hfloat  h_trigBit               ; evt.getByLabel (l_trigBit                , h_trigBit              ); 
   hfloat  h_metFiltersBit         ; evt.getByLabel (l_metFiltersBit          , h_metFiltersBit        ); 
   hfloat  h_vtxRho                ; evt.getByLabel (l_vtxRho                 , h_vtxRho               );
   hfloat  h_vtxZ                  ; evt.getByLabel (l_vtxZ                   , h_vtxZ                 );
@@ -199,14 +201,14 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   const int evtno  ( (2*isData_ - 1) * (*h_evtno) )   ; //// If MC, -ve sign for evtno  
 
   unsigned int hltdecisions(0) ; 
-  for ( const string& myhltpath : hltPaths_ ) {
-    vector<string>::const_iterator it ;
-    for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
-      if ( it->find(myhltpath) < std::string::npos) {
-        hltdecisions |= int((h_trigBit.product())->at( it - (h_trigName.product())->begin() )) << ( it - (h_trigName.product())->begin() ) ;  
+    for ( const string& myhltpath : hltPaths_ ) {
+      vector<string>::const_iterator it ;
+      for (it = (h_trigName.product())->begin(); it != (h_trigName.product())->end(); ++it ) {
+	if ( it->find(myhltpath) < std::string::npos) {
+	  hltdecisions |= int((h_trigBit.product())->at( it - (h_trigName.product())->begin() )) << ( it - (h_trigName.product())->begin() ) ;  
+	}
       }
     }
-  }
   bool hltdecision(false) ; 
   if ( hltPaths_.size() > 0 && !hltdecisions) hltdecision=false;
   else hltdecision=true;
@@ -214,16 +216,16 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   ////if ( cleanEvents_ && hltdecision==false ) return false ; 
 
   if ( isData_ ) {
-    bool metfilterdecision(1) ; 
-    for ( const string& metfilter : metFilters_ ) {
-      vector<string>::const_iterator it ; 
-      for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
-        if ( it->find(metfilter) < std::string::npos) {
-          metfilterdecision *= (h_metFiltersBit.product())->at( it - (h_metFiltersName.product())->begin() ) ; 
-        }
+    bool metfilterdecision(1) ;
+      for ( const string& metfilter : metFilters_ ) {
+	vector<string>::const_iterator it ; 
+	for (it = (h_metFiltersName.product())->begin(); it != (h_metFiltersName.product())->end(); ++it) {
+	  if ( it->find(metfilter) < std::string::npos) {
+	    metfilterdecision *= (h_metFiltersBit.product())->at( it - (h_metFiltersName.product())->begin() ) ; 
+	  }
+	}
       }
-    }
-    if ( !metfilterdecision ) return false ; 
+      if ( !metfilterdecision ) return false ; 
   }
 
   const int npv(*h_npv) ; 
@@ -288,12 +290,13 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   string evttype(isData_ ? "EvtType_Data" : "EvtType_MC");
 
   if ( !isData_ ) {
+ 
     vlq::GenParticleCollection vlqTtZ = pickTtZ(evt) ;  
     vlq::GenParticleCollection vlqTtH = pickTtH(evt) ;  
     vlq::GenParticleCollection vlqTbW = pickTbW(evt) ;  
     vlq::GenParticleCollection vlqBbZ = pickBbZ(evt) ;  
     vlq::GenParticleCollection vlqBbH = pickBbH(evt) ;  
-    vlq::GenParticleCollection vlqBtW = pickBtW(evt) ;  
+    vlq::GenParticleCollection vlqBtW = pickBtW(evt) ; 
 
     if ( vlqTtZ.size() == 2 ) evttype = "EvtType_MC_tZtZ" ; 
     if ( vlqTtH.size() == 2 ) evttype = "EvtType_MC_tHtH" ; 
@@ -310,8 +313,18 @@ bool EventCleaner::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
     if ( vlqBbZ.size() == 1 && vlqBbH.size() == 1 ) evttype = "EvtType_MC_bZbH" ; 
     if ( vlqBbZ.size() == 1 && vlqBtW.size() == 1 ) evttype = "EvtType_MC_bZtW" ; 
     if ( vlqBbH.size() == 1 && vlqBtW.size() == 1 ) evttype = "EvtType_MC_bHtW" ; 
-  }
+ 
+    vlqTtZ.clear(); vlqTtH.clear(); vlqTbW.clear();
+    vlqBbZ.clear(); vlqBbH.clear(); vlqBbH.clear();
 
+    std::vector<vlq::GenParticle>(vlqTtZ).swap(vlqTtZ);
+    std::vector<vlq::GenParticle>(vlqTtH).swap(vlqTtH);
+    std::vector<vlq::GenParticle>(vlqTbW).swap(vlqTbW);
+    std::vector<vlq::GenParticle>(vlqBbZ).swap(vlqBbZ);
+    std::vector<vlq::GenParticle>(vlqBbH).swap(vlqBbH);
+    std::vector<vlq::GenParticle>(vlqBbH).swap(vlqBbH);
+  }
+  //cout << "evt type = " << evttype << endl;
   auto_ptr<int>ptr_evtno(new int(evtno)); 
   auto_ptr<int>ptr_lumisec(new int(lumisec)); 
   auto_ptr<int>ptr_runno(new int(runno)); 

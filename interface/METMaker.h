@@ -10,21 +10,21 @@ using namespace std;
 using namespace edm;
 
 class METMaker {
-  public:
+public:
     METMaker (edm::ParameterSet const& pars, edm::ConsumesCollector && iC) ;
-    ~METMaker () ;
-    void operator () (edm::Event& evt, vlq::MetCollection& MET) ;
+	~METMaker () ;
+	void operator () (edm::Event& evt, vlq::MetCollection& MET) ;
 
-  private:
-    edm::InputTag l_metFullPhi                  ;
-    edm::InputTag l_metFullPt                   ;
-    edm::InputTag l_metFullPx                   ;
-    edm::InputTag l_metFullPy                   ;
-    edm::InputTag l_metFulluncorPhi             ;
-    edm::InputTag l_metFulluncorPt              ;
-    edm::InputTag l_metFulluncorSumEt           ;
+private:
+	edm::InputTag l_metFullPhi			;
+	edm::InputTag l_metFullPt 			;
+	edm::InputTag l_metFullPx 			;
+	edm::InputTag l_metFullPy 			;
+	edm::InputTag l_metFulluncorPhi 	;
+	edm::InputTag l_metFulluncorPt 		;
+	edm::InputTag l_metFulluncorSumEt   ;
 
-    double METPtMin_ ;
-    double METPtMax_ ;
+	double METPtMin_ ;
+	double METPtMax_ ;
 };
 #endif

@@ -21,7 +21,7 @@ defaultAK4JetSelectionParameters = cms.PSet(
     jerShift                  = cms.int32(1), 
     jetPtMin                  = cms.double(30),
     jetPtMax                  = cms.double(1000000),
-    jetAbsEtaMax              = cms.double(5.0),
+    jetAbsEtaMax              = cms.double(2.4),# 5.0
     jetCSVDiscMin             = cms.double(-10000),
     jetCSVDiscMax             = cms.double(10000),
     btaggedcsvlOP             = cms.double(CSVv2L) , 
@@ -103,4 +103,3 @@ defaultWJetSelectionParameters = defaultHJetSelectionParameters.clone(
 defaultBTaggedAK8JetSelectionParameters = defaultAK8JetSelectionParameters.clone(
     jetCSVDiscMin       = cms.double(CSVv2M),
     )
-

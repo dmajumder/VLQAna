@@ -1,0 +1,12 @@
+Make a new directory for each Channel (bZbZ, bZbH, etc.) / Mass point combination
+
+Edit dummy_os2lana*.py
+Edit toMakePython.sh
+
+Make directories to store python files in. Make sure it has the same name is SAMPLE in toMakePython.sh
+Make a directory to store condor output in. More.....
+./toMakePython.sh to make all python scripts for condor
+python batchMaker.py Path=path to current directory+output to make batch scripts in current directory to submit condor jobs
+python runMaker.py pyInput='path to python scripts' output='eos space to output to' test='directory where all necessary .txt, .root, etc files are to copy to condor (probably test directory)'
+
+... Still working on all instructions ...

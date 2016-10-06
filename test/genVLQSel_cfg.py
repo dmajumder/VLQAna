@@ -3,8 +3,8 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("VLQGen")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 5
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 
@@ -16,38 +16,38 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ###############################
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
-options.register ('TPrime',
-                  1,
+options.register('sigType', 'BPrime',
                   VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "if running over TT samples (1) else running over BB samples(0)")
+                  VarParsing.varType.string,
+                  "TT or BB? Choose: 'TPrime' or 'BPrime'"
+                 )
 options.parseArguments()
 
 print options
 
-process.load("Analysis.VLQAna.genVLQSel_cfi") 
-from Analysis.VLQAna.genVLQSel_cfi import *  
+# input
+process.source = cms.Source(
+    "PoolSource",
+    fileNames = cms.untracked.vstring(
+      'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
+      )
+    )
 
-if options.TPrime:
-    process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/user/devdatta/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V3/150703_110007/0000/B2GEDMNtuple_1.root',)
-                                )
-    process.GenInfo = cms.EDProducer("GenVLQSel",
-                                     genParams.clone(momids = cms.vint32(8000001, -8000001))#TPrime 
-                                     )
-else:
-    process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/BprimeBprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151002_170055/0000/B2GEDMNtuple_1.root',)
-                                )
-    process.GenInfo = cms.EDProducer("GenVLQSel",
-                                     genParams.clone(momids = cms.vint32(8000002, -8000002))#BPrime 
-                                     )
+# output 
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string('EvtCounts_genVLQ')
+    )
 
-process.p0 = cms.Path(process.GenInfo)
+# gen info module
+from Analysis.VLQAna.genVLQSel_cfi import genParams
+process.genInfo = genParams.clone(sigtype= cms.string(options.sigType))
+
+process.p = cms.Path(process.genInfo)
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('genVLQInfo.root'),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p0') ),
+                               SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+                               dropMetaData = cms.untracked.string('DROPPED'),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_GenInfo*_*_*',
                                                                       )
