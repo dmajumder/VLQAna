@@ -55,7 +55,6 @@ class EventCleaner : public edm::EDFilter {
     const bool isData_                                     ; 
     const bool doPUReweightingOfficial_                    ;
     const std::string file_PVWt_                           ; 
-    const std::string file_EWK_                            ;
     const std::string file_PUDistData_                     ;
     const std::string file_PUDistDataLow_                  ;
     const std::string file_PUDistDataHigh_                 ;
@@ -105,7 +104,6 @@ EventCleaner::EventCleaner(const edm::ParameterSet& iConfig) :
   isData_                 (iConfig.getParameter<bool>                     ("isData")),
   doPUReweightingOfficial_(iConfig.getParameter<bool>                     ("DoPUReweightingOfficial")),
   file_PVWt_              (iConfig.getParameter<std::string>              ("File_PVWt")),
-  file_EWK_               (iConfig.getParameter<std::string>              ("File_EWK")),
   file_PUDistData_        (iConfig.getParameter<std::string>              ("File_PUDistData")),
   file_PUDistDataLow_     (iConfig.getParameter<std::string>              ("File_PUDistDataLow")),
   file_PUDistDataHigh_    (iConfig.getParameter<std::string>              ("File_PUDistDataHigh")),
