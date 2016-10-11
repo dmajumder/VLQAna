@@ -24,11 +24,11 @@ PickGenPart::PickGenPart (const edm::ParameterSet& iConfig, edm::ConsumesCollect
   ids_                 (iConfig.getParameter<std::vector<int>>("ids")), 
   statuses_            (iConfig.getParameter<std::vector<int>>("statuses")), 
   checkstatus_         (iConfig.getParameter<bool>("checkstatus")), 
-  mom0ids_             (iConfig.getParameter<std::vector<int>>("mom0ids")), 
-  mom1ids_             (iConfig.getParameter<std::vector<int>>("mom1ids")), 
+  mom0ids_             (iConfig.getParameter<std::vector<int> >("mom0ids")), 
+  mom1ids_             (iConfig.getParameter<std::vector<int> >("mom1ids")), 
   checkmomid_          (iConfig.getParameter<bool>("checkmomid")),
-  dau0ids_             (iConfig.getParameter<std::vector<int>>("dau0ids")), 
-  dau1ids_             (iConfig.getParameter<std::vector<int>>("dau1ids")), 
+  dau0ids_             (iConfig.getParameter<std::vector<int> >("dau0ids")), 
+  dau1ids_             (iConfig.getParameter<std::vector<int> >("dau1ids")), 
   checkdauid_          (iConfig.getParameter<bool>("checkdauid")),
   debug_               (iConfig.getParameter<bool>("debug"))
 { 

@@ -176,6 +176,8 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
 
   if ((h_jetPt.product())->size() < 1) return ; 
 
+  //cout << jecShift_ << " " << jerShift_ << endl;
+
   const int npv(*h_npv) ; 
   const double rho(*h_rho) ; 
 
@@ -184,6 +186,7 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
     double jetPt = (h_jetPt.product())->at(ijet) ; 
     if (jetPt == 0.) continue; 
     double jetAbsEta = abs((h_jetEta.product())->at(ijet)) ;
+    //cout << jetAbsEta << "; " << idxjetAbsEtaMax_ << endl;
     if (jetAbsEta  > idxjetAbsEtaMax_) continue ; 
 
     TLorentzVector  jetP4, uncorrJetP4, newJetP4;
@@ -194,7 +197,7 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
         (h_jetEnergy.product())->at(ijet) ) ;
 
     uncorrJetP4 = jetP4 * (h_jetJEC.product())->at(ijet) ; 
-
+    //cout << "JEC = " << (h_jetJEC.product())->at(ijet) << endl; 
     double newJEC(1.0); 
     if ( newJECPayloadNames_.size() > 0 ) {
       ptr_newJEC_->setJetPt ( uncorrJetP4.Pt()     );
@@ -220,7 +223,7 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
       << " \njet mass newJEC      = " << newJetP4.Mag() 
       << endl ; 
 #endif 
-
+    //cout << "eta old = " << jetP4.Eta() << ", eta new = " << newJetP4.Eta() << endl;
     double ptsmear(1.) ;
     if ( jerShift_ != 0 ) {
       double pt_gen = (h_jetGenJetPt.product())->at(ijet) ;  

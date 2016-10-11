@@ -22,7 +22,7 @@ genPartParams = cms.PSet(
 
 getSelectParams = cms.PSet(
     genPartParams, 
-    ids                 = cms.vint32(-8000001,-8000002,8000001,8000002), 
+    ids                 = cms.vint32(-8000001,-8000002,8000001,8000002,1,2,3,4,5,-1,-2,-3,-4,-5,23),
     statuses            = cms.vint32(22), 
     checkstatus         = cms.bool(False),
     mom0ids             = cms.vint32(-8000001,-8000002,8000001,8000002), 

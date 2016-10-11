@@ -13,18 +13,19 @@ using namespace edm;
 typedef std::vector<vlq::GenParticle> GenParticleCollection;
 
 class MassReco {
-  public: 
-    MassReco() ;
-    ~MassReco() ;
-    TLorentzVector getGen(GenParticleCollection, int, int) ;
-    TLorentzVector getGen(GenParticleCollection, int, int, int) ;
-    TLorentzVector getMatchedJet(TLorentzVector, vlq::JetCollection, double) ;
-    double findInvMass(TLorentzVector, TLorentzVector) ;
-    double findInvMass(TLorentzVector, TLorentzVector, TLorentzVector) ;
-    pair<double, double> doReco(vlq::JetCollection, double, TLorentzVector) ;
-    pair<double, double> doReco(vlq::JetCollection, TLorentzVector, double, TLorentzVector);
-    double chi2(vector<TLorentzVector>, TLorentzVector, double, double) ;
-    double chi2(vector<TLorentzVector>, TLorentzVector, TLorentzVector, double, double);
-    pair<double, double> vector_eval(vector<pair<double, double> >) ;
+public: 
+        MassReco() ;
+	~MassReco() ;
+	TLorentzVector getGen(GenParticleCollection, int, int) ;
+	TLorentzVector getGen(GenParticleCollection, int, int, int) ;
+	TLorentzVector getMatchedJet(TLorentzVector, vlq::JetCollection, double) ;
+	double findInvMass(TLorentzVector, TLorentzVector) ;
+	double findInvMass(TLorentzVector, TLorentzVector, TLorentzVector) ;
+	pair<double, double> doReco(vlq::JetCollection, double, TLorentzVector, double) ;
+	pair<double, double> doReco(vlq::JetCollection, vlq::Jet, double, TLorentzVector, double);
+	double chi2(vector<TLorentzVector>, TLorentzVector, double, double, double) ;
+	double chi2(vector<TLorentzVector>, vlq::Jet, TLorentzVector,  double, double, double);
+	pair<double, double> vector_eval(vector<pair<double, double> >) ;
+
 };
 #endif

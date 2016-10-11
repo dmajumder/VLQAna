@@ -3,131 +3,139 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing('analysis')
-options.register('outFileName', 'SkimmedB2GEdmNtuples.root',
+options.register('outFileName', 'os2lana_skim.root',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Output file name"
+    )
+options.register('doPUReweightingOfficial', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Do pileup reweighting using official recipe"
+    )
+options.register('applyLeptonSFs', False,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply lepton SFs to the MC"
     )
 options.register('isData', False,
     VarParsing.multiplicity.singleton,
     VarParsing.varType.bool,
     "Is data?"
     )
-options.register('skimType', '',
+options.register('applyHtCorr', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply corrections to efficiency due to HT"
+    )
+options.register('runSignal', True,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Store the channel normalization for signal"
+    )
+options.register('sigType', 'BPrime',
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
-    "Skim type: CR_Zelel, CR_Zmumu, SR_Zelel, SR_Zmumu" 
+    "TT or BB? Choose: 'TPrime' or 'BPrime'"
     )
+options.register('zdecaymode', 'zelel',
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Z->mumu or Z->elel? Choose: 'zmumu' or 'zelel'"
+    )
+options.register('applyDYNLOCorr', False, ### Set to true only for DY process ### Only EWK NLO k-factor is applied
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "Apply DY EWK k-factor to DY MC"
+    )
+
 options.setDefault('maxEvents', 1000)
 options.parseArguments()
+print options
 
-###Skim variables:
-zmassMin = 60.
-zmassMax = 120. 
-ak4jetPtMin = 40.
-ak4jetAbsEtaMax = 2.4
-ak8jetPtMin = 200.
-ak8jetAbsEtaMax = 2.4
-global zptMin, zptMax, nzelel, nzmumu, nak4jets, nak8jets 
-if options.skimType == "":
-    sys.exit("!!!!Error: Enter 'skimType' . Options are: ''CR_Zelel, 'CR_Zmumu', 'SR_Zelel', 'SR_Zmumu'.\n")
-elif options.skimType == 'CR_Zelel':
-  zptMin= 0.
-  zptMax= 200.
-  nzelel=1
-  nzmumu=0
-  nak4jets=1
-  nak8jets=0
-elif options.skimType == 'CR_Zmumu':
-  zptMin= 0.
-  zptMax= 200.
-  nzelel=0
-  nzmumu=1
-  nak4jets=1
-  nak8jets=0
-elif options.skimType == 'SR_Zelel':
-  zptMin= 200.
-  zptMax= 100000.
-  nzelel=1
-  nzmumu=0
-  nak4jets=1
-  nak8jets=1
-elif options.skimType == 'SR_Zmumu':
-  zptMin= 200.
-  zptMax= 100000.
-  nzelel=0
-  nzmumu=1
-  nak4jets=1
-  nak8jets=1
+hltpaths = []
+if options.zdecaymode == "zmumu":
+  hltpaths = [
+    "HLT_DoubleIsoMu17_eta2p1_v",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+    ]
+elif options.zdecaymode == "zelel":
+  hltpaths = [
+    "HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v",
+    "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v"
+    ]
 else:
-  sys.exit("!!!!Error: Wrong 'skimType' entered. Options are: ''CR_Zelel, 'CR_Zmumu', 'SR_Zelel', 'SR_Zmumu'.\n") 
-###
+  sys.exit("!!!Error: Wrong Z decay mode option chosen. Choose either 'zmumu' or 'zelel'!!!")
 
 process = cms.Process("Skim")
 
+# message logger
 process.load("FWCore.MessageService.MessageLogger_cfi")
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 500
-process.MessageLogger.cerr.FwkJob.limit=1
-process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-from inputFiles_cfi import *
-
+# input
+#from inputFiles_cfi import *
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-      #FileNames_TprimeBToTH_M1200
-      'root://cms-xrd-global.cern.ch//store/group/phys_b2g/vorobiev/TprimeTprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_Run2Spring15_25ns_v74x_V61/151004_184150/0000/B2GEDMNtuple_1.root',
+      #options.outFileName
+      'root://eoscms.cern.ch//store/group/phys_b2g/B2GAnaFW_76X_V1p2/BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2/160411_160543/0000/B2GEDMNtuple_12.root',
       )
     )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
-
+# output 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('EvtCounts_'+options.outFileName)
     )
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outFileName),
-    SelectEvents = cms.untracked.PSet(
-      SelectEvents = cms.vstring('p')
-      ),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('p')),
     dropMetaData = cms.untracked.string('DROPPED'),
     outputCommands = cms.untracked.vstring("keep *",)
     )
 
+#Event counter
 from Analysis.EventCounter.eventcounter_cfi import eventCounter
 process.allEvents = eventCounter.clone(isData=options.isData)
+process.cleanedEvents = eventCounter.clone(isData=options.isData)
 process.finalEvents = eventCounter.clone(isData=options.isData)
 
+# VLQGenFilter
+from Analysis.VLQAna.genVLQSel_cfi import genParams
+process.genInfo = genParams.clone(sigtype= cms.string(options.sigType))
+
+#Event cleaner 
+process.load("Analysis.VLQAna.EventCleaner_cff")
+process.evtcleaner.isData = options.isData
+process.evtcleaner.hltPaths = cms.vstring (hltpaths)
+process.evtcleaner.DoPUReweightingOfficial = cms.bool(options.doPUReweightingOfficial)
+
+#Skim
 from Analysis.VLQAna.Skim_cff import *
 process.skim = skim.clone(
-    ZCandParams = skim.ZCandParams.clone(
-      massMin = cms.double(zmassMin),
-      massMax = cms.double(zmassMax),
-      ptMin =  cms.double(zptMin), 
-      ptMax =  cms.double(zptMax), 
-      ), 
-    elselParams = skim.elselParams.clone(useVID = cms.bool(options.isData)), 
-    jetAK4selParams = skim.jetAK4selParams.clone(
-      jetPtMin = cms.double(ak4jetPtMin), 
-      jetAbsEtaMax = cms.double(ak4jetAbsEtaMax),
-      ),
-    jetAK8selParams = skim.jetAK8selParams.clone(
-      jetPtMin = cms.double(ak8jetPtMin), 
-      jetAbsEtaMax = cms.double(ak8jetAbsEtaMax),
-      ),
-    isData = cms.bool(options.isData),
-    nzelel = nzelel,
-    nzmumu = nzmumu,
-    nak4jets = nak4jets,
-    nak8jets = nak8jets, 
+    zdecayMode = cms.string(options.zdecaymode),
+    applyLeptonSFs = cms.bool(options.applyLeptonSFs),
+    applyDYNLOCorr = cms.bool(options.applyDYNLOCorr),
+    applyHtCorr = cms.bool(options.applyHtCorr),
     )
+process.skim.lepsfsParams.zdecayMode = cms.string(options.zdecaymode)
 
-process.p = cms.Path(
+if options.runSignal and not options.isData:
+  process.p = cms.Path(
     process.allEvents
+    *process.genInfo 
+    *process.evtcleaner
     *process.skim
     *process.finalEvents
-    ) 
-
+    )
+else:
+  process.p = cms.Path(
+    process.allEvents
+    *process.evtcleaner
+    *process.skim
+    *process.finalEvents
+  )
+  
 process.outpath = cms.EndPath(process.out)

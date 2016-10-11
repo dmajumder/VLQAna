@@ -103,4 +103,3 @@ defaultWJetSelectionParameters = defaultHJetSelectionParameters.clone(
 defaultBTaggedAK8JetSelectionParameters = defaultAK8JetSelectionParameters.clone(
     jetCSVDiscMin       = cms.double(CSVv2M),
     )
-
