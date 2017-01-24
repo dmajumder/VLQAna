@@ -1,4 +1,3 @@
-
 #!/bin/python
 
 from string import *
@@ -81,8 +80,10 @@ for job in jobList:
     a1 = a0.replace( 'DUMMY_DATASET', "'"+job[0]+"'" )
     a2 = a1.replace( 'DUMMY_NUMBER',  job[2])
     a3 = a2.replace( 'DUMMY_NAME', "'"+outname+"'" )
-    a4 = a3.replace( 'DUMMY_SITE',"'"+'T2_CH_CERN'+"'")
-    a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/group/phys_b2g/'+user+'/'+options.channel+"/'")
+#    a4 = a3.replace( 'DUMMY_SITE',"'"+'T2_CH_CERN'+"'")
+    a4 = a3.replace( 'DUMMY_SITE',"'"+'T3_US_FNALLPC'+"'")
+#    a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/group/phys_b2g/'+user+'/'+options.channel+"/'")
+    a5 = a4.replace( 'DUMMY_OUTPUT_PATH', "'"+'/store/user/'+user+'/80X_skims'+options.channel+"'")
     a6 = a5.replace( 'DATA', "'"+isData+"'")
     a7 = a6.replace( 'MODE', "'"+mode+"'")
    
@@ -113,4 +114,4 @@ for job in jobList:
     print exe
     print '--------------->'
     
-    #subprocess.call( [exe], shell=True )
+    subprocess.call( [exe], shell=True )

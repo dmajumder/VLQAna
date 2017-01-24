@@ -211,8 +211,10 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
 {
   produces<vlq::JetCollection>("tjets") ; 
   produces<vlq::JetCollection>("wjets") ; 
+  produces<vlq::JetCollection>("hjets") ;
   produces<vlq::JetCollection>("bjets") ; 
   produces<vlq::JetCollection>("jets") ; 
+  produces<vlq::JetCollection>("ak8jets") ;
   produces<vlq::CandidateCollection>("zllcands") ; 
   produces<double>("PreWeight");
 }
@@ -725,16 +727,21 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
      evt.put(ptr_evtwt, "PreWeight");
      
      if(goodAK4Jets.at(0).getPt() > 100 && goodAK4Jets.at(1).getPt() > 50 && goodBTaggedAK4Jets.size() > 0 && ST > STMin_){
+
         std::auto_ptr<vlq::JetCollection> ptr_tjets( new vlq::JetCollection(goodTopTaggedJets) ) ; 
         std::auto_ptr<vlq::JetCollection> ptr_wjets( new vlq::JetCollection(goodWTaggedJets) ) ; 
+	std::auto_ptr<vlq::JetCollection> ptr_hjets( new vlq::JetCollection(goodHTaggedJets) ) ;
         std::auto_ptr<vlq::JetCollection> ptr_bjets( new vlq::JetCollection(goodBTaggedAK4Jets ) ) ; 
         std::auto_ptr<vlq::JetCollection> ptr_jets ( new vlq::JetCollection(goodAK4Jets ) ) ; 
+	std::auto_ptr<vlq::JetCollection> ptr_ak8jets ( new vlq::JetCollection(goodAK8Jets ) ) ;
         std::auto_ptr<vlq::CandidateCollection> ptr_zllcands ( new vlq::CandidateCollection(zll) ) ; 
-        
+	
         evt.put(ptr_tjets, "tjets") ; 
-        evt.put(ptr_wjets, "wjets") ; 
+        evt.put(ptr_wjets, "wjets") ;
+	evt.put(ptr_hjets, "hjets") ; 
         evt.put(ptr_bjets, "bjets") ; 
         evt.put(ptr_jets , "jets")  ; 
+	evt.put(ptr_ak8jets, "ak8jets") ;
         evt.put(ptr_zllcands , "zllcands")  ;
      }   
   }
