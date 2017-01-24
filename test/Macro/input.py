@@ -72,10 +72,10 @@ f_BpBp_bZbH_1800 = TFile(path+'bprime1800_bH'+suf+'.root')
 #===== cross sections (pb)==========
 
 Top_xs            = 831.76  *gSF
-DY100to200_xs     = 147.4   *gSF #*1.23
-DY200to400_xs     = 40.99   *gSF #*1.23
-DY400to600_xs     = 5.678   *gSF #*1.23
-DY600to800_xs     = 1.363   *gSF #*1.23
+DY100to200_xs     = 83.12#147.4   *gSF #*1.23
+DY200to400_xs     = 3.047#40.99   *gSF #*1.23
+DY400to600_xs     = 0.3921#5.678   *gSF #*1.23
+DY600to800_xs     = 0.03636#1.363   *gSF #*1.23
 DY800to1200_xs    = .6759   *gSF *1.23
 DY1200to2500_xs   = 0.116   *gSF *1.23
 DY2500toInf_xs    = .002592   *gSF *1.23
