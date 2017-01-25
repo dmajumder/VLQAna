@@ -299,7 +299,7 @@ else:
     *process.evtcleaner
     *process.cleanedEvents
     *process.ana
-    *process.massReco
+#    *process.massReco
     *process.finalEvents
     )
 
