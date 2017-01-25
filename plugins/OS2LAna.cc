@@ -211,10 +211,12 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
 {
   produces<vlq::JetCollection>("tjets") ; 
   produces<vlq::JetCollection>("wjets") ; 
+  produces<vlq::JetCollection>("hjets") ;
   produces<vlq::JetCollection>("bjets") ; 
   produces<vlq::JetCollection>("jets") ; 
   produces<vlq::CandidateCollection>("zllcands") ; 
   produces<double>("PreWeight");
+  produces<double>("finalWeight");
 }
 
 
@@ -720,19 +722,27 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["sqrtChi2"] ->Fill(sqrt(chi2_result.first), evtwt);
   h1_["chi2_mass"] ->Fill(chi2_result.second, evtwt);
 */
+  std::auto_ptr<double> ptr_fevtwt ( new double(evtwt) ) ;
+  std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
+  evt.put(ptr_fevtwt, "finalWeight");
+  evt.put(ptr_evtwt, "PreWeight");
+
   if (skim_){
-     std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
-     evt.put(ptr_evtwt, "PreWeight");
+    //     std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
+    //     evt.put(ptr_evtwt, "PreWeight");
      
      if(goodAK4Jets.at(0).getPt() > 100 && goodAK4Jets.at(1).getPt() > 50 && goodBTaggedAK4Jets.size() > 0 && ST > STMin_){
+
         std::auto_ptr<vlq::JetCollection> ptr_tjets( new vlq::JetCollection(goodTopTaggedJets) ) ; 
         std::auto_ptr<vlq::JetCollection> ptr_wjets( new vlq::JetCollection(goodWTaggedJets) ) ; 
+	std::auto_ptr<vlq::JetCollection> ptr_hjets( new vlq::JetCollection(goodHTaggedJets) ) ;
         std::auto_ptr<vlq::JetCollection> ptr_bjets( new vlq::JetCollection(goodBTaggedAK4Jets ) ) ; 
         std::auto_ptr<vlq::JetCollection> ptr_jets ( new vlq::JetCollection(goodAK4Jets ) ) ; 
         std::auto_ptr<vlq::CandidateCollection> ptr_zllcands ( new vlq::CandidateCollection(zll) ) ; 
-        
+	
         evt.put(ptr_tjets, "tjets") ; 
-        evt.put(ptr_wjets, "wjets") ; 
+        evt.put(ptr_wjets, "wjets") ;
+	evt.put(ptr_hjets, "hjets") ; 
         evt.put(ptr_bjets, "bjets") ; 
         evt.put(ptr_jets , "jets")  ; 
         evt.put(ptr_zllcands , "zllcands")  ;

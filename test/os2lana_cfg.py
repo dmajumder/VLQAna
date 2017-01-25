@@ -116,9 +116,12 @@ if options.filterSignal == True:
    elif len(options.signalType) == 0:
      sys.exit("!!!Error: Cannot keep signalType empty when filterSignal switched on!!!") 
  
-print options
+#print options
 
-process = cms.Process("OS2LAna")
+if options.skim:
+  process = cms.Process("OS2LAna")
+else:
+  process = cms.Process("OS2LAna2")
 
 from inputFiles_cfi import * 
 
@@ -130,9 +133,9 @@ process.source = cms.Source(
     )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 process.load("Analysis.VLQAna.EventCleaner_cff")
 process.evtcleaner.File_PUDistData= cms.string('RunII2016Rereco_25ns_PUXsec69000nb.root')
@@ -189,6 +192,11 @@ if options.skim:
   process.ana.jetWTaggedselParams.jetPtMin = cms.double(170) 
   process.ana.jetHTaggedselParams.jetPtMin = cms.double(170) 
   process.ana.jetWTaggedselParams.jetPtMin = cms.double(300) 
+
+process.load('Analysis.VLQAna.MassReco_cfi')
+process.massReco.ptMin = cms.double(150.)
+process.massReco.zdecaymode = cms.string(options.zdecaymode)
+process.massReco.signalType = cms.string(options.signalType)
 
 if options.skim: 
   process.ana.STMin = cms.double(0.)
@@ -291,6 +299,7 @@ else:
     *process.evtcleaner
     *process.cleanedEvents
     *process.ana
+#    *process.massReco
     *process.finalEvents
     )
 
