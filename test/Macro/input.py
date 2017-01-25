@@ -3,7 +3,7 @@
 # =====================================================
 #  INPUTS		
 # =====================================================
-path = '/uscms_data/d3/tmitchel/80X/CMSSW_8_0_20/src/Analysis/VLQAna/test/Macro/elRoots/'
+path = '/uscms_data/d3/tmitchel/80X/CMSSW_8_0_20/src/Analysis/VLQAna/test/Macro/elTemps/'
 pathS = '/uscms_data/d2/skhalil/MyVLQAna2/CMSSW_7_4_15_patch1/src/Analysis/VLQAna/test/CRAB_On_Skim/Histo/'
 pathR = '/uscms_data/d3/dmendis/Rachitha2/CMSSW_7_4_16_patch2/src/Analysis/VLQAna/test/CRAB_0n_Skim/Histo/'
 
@@ -13,7 +13,7 @@ if 'elel' in ch:
 elif 'mumu' in ch:
     suf = '_mu'
 #f_Data_Oct2015 = TFile(path+'')
-f_Data_PromptReco = TFile(path+'bprime800_bZ'+suf+'.root')
+f_Data_PromptReco = TFile(path+'ttbar_Tune1'+suf+'.root')
 #f_Data_PromptReco = TFile(path+'Data'+suf+'.root')
 
 f_DY100to200 = TFile(path+'dy_pt100-250'+suf+'.root')
@@ -124,7 +124,7 @@ BpBp1800_xs = 1.
 
 #===== Number of generated events ======
 
-Top_num          =  182123200.
+Top_num          =  182081400.#182123200.
 DY100to200_num   =  2933965.
 DY200to400_num   =  578826.
 DY400to600_num   =  589842.
@@ -158,17 +158,17 @@ TpTp1000_num     =  832200.
 TpTp1200_num     =  832600.
 TpTp1500_num     =  1.
 BpBp700_num      =  1.
-BpBp800_num      =  826200.
-BpBp900_num      =  799800.
-BpBp1000_num     =  833000.
-BpBp1100_num     =  832000.
-BpBp1200_num     =  832200.
-BpBp1300_num     =  807200.
-BpBp1400_num     =  771200.
-BpBp1500_num     =  831000.
-BpBp1600_num     =  701000.
-BpBp1700_num     =  832600.
-BpBp1800_num     =  795400.
+BpBp800_num      =  826200./9.
+BpBp900_num      =  799800./9.
+BpBp1000_num     =  833000./9.
+BpBp1100_num     =  832000./9.
+BpBp1200_num     =  832200./9.
+BpBp1300_num     =  807200./9.
+BpBp1400_num     =  771200./9.
+BpBp1500_num     =  831000./9.
+BpBp1600_num     =  701000./9.
+BpBp1700_num     =  832600./9.
+BpBp1800_num     =  795400./9.
 
 
 # Legend

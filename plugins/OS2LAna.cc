@@ -214,9 +214,9 @@ OS2LAna::OS2LAna(const edm::ParameterSet& iConfig) :
   produces<vlq::JetCollection>("hjets") ;
   produces<vlq::JetCollection>("bjets") ; 
   produces<vlq::JetCollection>("jets") ; 
-  produces<vlq::JetCollection>("ak8jets") ;
   produces<vlq::CandidateCollection>("zllcands") ; 
   produces<double>("PreWeight");
+  produces<double>("finalWeight");
 }
 
 
@@ -722,9 +722,14 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
   h1_["sqrtChi2"] ->Fill(sqrt(chi2_result.first), evtwt);
   h1_["chi2_mass"] ->Fill(chi2_result.second, evtwt);
 */
+  std::auto_ptr<double> ptr_fevtwt ( new double(evtwt) ) ;
+  std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
+  evt.put(ptr_fevtwt, "finalWeight");
+  evt.put(ptr_evtwt, "PreWeight");
+
   if (skim_){
-     std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
-     evt.put(ptr_evtwt, "PreWeight");
+    //     std::auto_ptr<double> ptr_evtwt ( new double(presel_wt) ) ; 
+    //     evt.put(ptr_evtwt, "PreWeight");
      
      if(goodAK4Jets.at(0).getPt() > 100 && goodAK4Jets.at(1).getPt() > 50 && goodBTaggedAK4Jets.size() > 0 && ST > STMin_){
 
@@ -733,7 +738,6 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 	std::auto_ptr<vlq::JetCollection> ptr_hjets( new vlq::JetCollection(goodHTaggedJets) ) ;
         std::auto_ptr<vlq::JetCollection> ptr_bjets( new vlq::JetCollection(goodBTaggedAK4Jets ) ) ; 
         std::auto_ptr<vlq::JetCollection> ptr_jets ( new vlq::JetCollection(goodAK4Jets ) ) ; 
-	std::auto_ptr<vlq::JetCollection> ptr_ak8jets ( new vlq::JetCollection(goodAK8Jets ) ) ;
         std::auto_ptr<vlq::CandidateCollection> ptr_zllcands ( new vlq::CandidateCollection(zll) ) ; 
 	
         evt.put(ptr_tjets, "tjets") ; 
@@ -741,7 +745,6 @@ bool OS2LAna::filter(edm::Event& evt, const edm::EventSetup& iSetup) {
 	evt.put(ptr_hjets, "hjets") ; 
         evt.put(ptr_bjets, "bjets") ; 
         evt.put(ptr_jets , "jets")  ; 
-	evt.put(ptr_ak8jets, "ak8jets") ;
         evt.put(ptr_zllcands , "zllcands")  ;
      }   
   }
