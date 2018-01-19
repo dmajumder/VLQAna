@@ -1,4 +1,7 @@
 FileNames = {
+    'DYincl': [
+      '/store/user/oiorio/samples/June/05June/B2GAnaFW_80X_V3p2_June/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V3p2_June/170605_115033/0000/B2GEDMNtuple_1.root'
+      ],
     'TpbtH_M1000_W10p': [
       'file:/eos/cms/store/group/phys_b2g/B2GAnaFW_80X_V3p2/TprimeBToTH_M-1000_Width-30p_LH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2/TprimeBToTH_M-1000_Width-30p_LH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V3p2/170711_144142/0000/B2GEDMNtuple_1.root', 
       'file:/eos/cms/store/group/phys_b2g/B2GAnaFW_80X_V3p2/TprimeBToTH_M-1000_Width-30p_LH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2/TprimeBToTH_M-1000_Width-30p_LH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V3p2/170711_144142/0000/B2GEDMNtuple_10.root', 
