@@ -22,6 +22,7 @@ JetMaker::JetMaker (edm::ParameterSet const& iConfig, edm::ConsumesCollector && 
   scaledJetMass_            (iConfig.getParameter<double>                  ("scaledJetMass")), 
   jecShift_                 (iConfig.getParameter<double>                  ("jecShift")), 
   jerShift_                 (iConfig.getParameter<int>                     ("jerShift")), 
+  jmrShift_                 (iConfig.getParameter<int>                     ("jmrShift")), 
   newJECPayloadNames_       (iConfig.getParameter<std::vector<std::string>>("newJECPayloadNames")),
   jecUncPayloadName_        (iConfig.getParameter<std::string>             ("jecUncPayloadName")),
   jecAK8GroomedPayloadNames_(iConfig.getParameter<std::vector<std::string>>("jecAK8GroomedPayloadNames")), 
@@ -367,11 +368,12 @@ void JetMaker::operator()(edm::Event& evt, vlq::JetCollection& jets) {
       }
 
       double masssmear(1.) ;
-      if ( jerShift_ != 0 ) {
-        double pt_gen = (h_jetGenJetPt.product())->at(ijet) ;  
-        double pt_reco   = uncorrJetP4.Pt() ;
-        double jerscalemass = ApplyJERMass(jerShift_) ; 
-        masssmear = std::max( 0.0, pt_gen + jerscalemass*(pt_reco - pt_gen) )/pt_reco ; 
+      if ( jmrShift_ != 0 ) {
+        double jerscalemass = ApplyJERMass(jmrShift_) ; 
+        TRandom* rand = new TRandom();
+        //// A 10% W jet mass resolution: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetWtagging#Recommendation_for_13_TeV_data_a
+        masssmear = 1 + rand->Gaus(0., 0.1)*sqrt(std::max(jerscalemass*jerscalemass - 1, 0.)) ;
+        delete rand;
       }
 
       newJetP4.SetVectM(newJetP4.Vect(), newJetP4.Mag()*massCorr*masssmear) ; 

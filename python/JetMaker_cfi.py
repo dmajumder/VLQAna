@@ -19,6 +19,7 @@ defaultAK4JetSelectionParameters = cms.PSet(
     jecAK8GroomedPayloadNames = cms.vstring(), 
     jecShift                  = cms.double(0), 
     jerShift                  = cms.int32(1), 
+    jmrShift                  = cms.int32(0), 
     jetPtMin                  = cms.double(30),
     jetPtMax                  = cms.double(1000000),
     jetAbsEtaMax              = cms.double(5.0),
@@ -50,6 +51,7 @@ defaultAK8CHSJetSelectionParameters = defaultAK4JetSelectionParameters.clone(
     SDMassCorrWt              = cms.string(""), 
     jecShift                  = cms.double(0), 
     jerShift                  = cms.int32(1), 
+    jmrShift                  = cms.int32(0), 
     jetPtMin                  = cms.double(200),
     jetAbsEtaMax              = cms.double(2.4),
     jetPtMax                  = cms.double(1000000),
@@ -96,6 +98,7 @@ defaultCHSHJetSelectionParameters = defaultAK8CHSJetSelectionParameters.clone(
     jettau2Bytau1Min    = cms.double(0.0) ,
     jettau2Bytau1Max    = cms.double(0.6) ,
     subjetCSVMin        = cms.double(CSVv2L) ,
+    jmrShift            = cms.int32(1), 
     )
 
 ### https://twiki.cern.ch/twiki/bin/view/CMS/JetWtagging#Recommendation_for_13_TeV_data_a
@@ -105,6 +108,7 @@ defaultCHSWJetSelectionParameters = defaultAK8CHSJetSelectionParameters.clone(
     jetPrunedMassMax    = cms.double(105) ,
     jettau2Bytau1Min    = cms.double(0.0) ,
     jettau2Bytau1Max    = cms.double(0.6) ,
+    jmrShift            = cms.int32(1), 
     )
 
 defaultBTaggedCHSAK8JetSelectionParameters = defaultAK8CHSJetSelectionParameters.clone(
